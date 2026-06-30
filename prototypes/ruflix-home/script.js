@@ -8,7 +8,9 @@ const demoMedia = [
 ];
 
 const hero = document.getElementById('hero');
+const heroBackdrop = document.getElementById('heroBackdrop');
 const heroTitle = document.getElementById('heroTitle');
+const heroLogo = document.getElementById('heroLogo');
 const heroMeta = document.getElementById('heroMeta');
 const heroDesc = document.getElementById('heroDesc');
 const heroEyebrow = document.getElementById('heroEyebrow');
@@ -17,27 +19,59 @@ const tonightShelf = document.getElementById('tonightShelf');
 const exitMovieNight = document.getElementById('exitMovieNight');
 const dataStatus = document.getElementById('dataStatus');
 const profileName = document.getElementById('profileName');
+const libraryNav = document.getElementById('libraryNav');
+
+let heroTimer = null;
+let activeHero = null;
+
+function hashColor(input) {
+  const palette = ['#6b2b12', '#16324f', '#3b1d5a', '#0d475d', '#7c4418', '#173b2f', '#4a1833', '#26324a'];
+  let hash = 0;
+  for (let i = 0; i < input.length; i++) hash = input.charCodeAt(i) + ((hash << 5) - hash);
+  return palette[Math.abs(hash) % palette.length];
+}
 
 function gradient(item) {
-  if (item.image) return `linear-gradient(135deg, ${item.colors[0]}, ${item.colors[1]}), url('${item.image}')`;
   return `linear-gradient(135deg, ${item.colors[0]}, ${item.colors[1]})`;
 }
 
-function setHero(item) {
-  if (item.surprise) return;
-  document.documentElement.style.setProperty('--glow', `${item.colors[0]}66`);
-  hero.style.setProperty('--hero-bg', gradient(item));
-  heroTitle.textContent = item.title;
-  heroDesc.textContent = item.desc || 'No overview available yet.';
-  heroEyebrow.textContent = item.eyebrow || 'Featured';
-  heroMeta.innerHTML = [item.year, item.rating, item.runtime, item.genre].filter(Boolean).map(x => `<span>${x}</span>`).join('');
+function setHero(item, immediate = false) {
+  if (item.surprise || !item.title) return;
+  if (activeHero === item.title && !immediate) return;
+  activeHero = item.title;
+
+  clearTimeout(heroTimer);
+  heroTimer = setTimeout(() => {
+    hero.classList.add('is-changing');
+    setTimeout(() => {
+      document.documentElement.style.setProperty('--glow', `${item.colors[0]}66`);
+      heroBackdrop.style.backgroundImage = item.backdrop
+        ? `linear-gradient(135deg, rgba(5,6,9,.22), rgba(5,6,9,.06)), url('${item.backdrop}')`
+        : gradient(item);
+      heroTitle.textContent = item.title;
+      heroDesc.textContent = item.desc || 'No overview available yet.';
+      heroEyebrow.textContent = item.eyebrow || 'Featured';
+      heroMeta.innerHTML = [item.year, item.rating, item.runtime, item.genre].filter(Boolean).map(x => `<span>${x}</span>`).join('');
+
+      if (item.logo) {
+        heroLogo.src = item.logo;
+        heroLogo.classList.remove('hidden');
+        heroTitle.classList.add('hidden');
+      } else {
+        heroLogo.classList.add('hidden');
+        heroTitle.classList.remove('hidden');
+      }
+
+      setTimeout(() => hero.classList.remove('is-changing'), 180);
+    }, immediate ? 0 : 240);
+  }, immediate ? 0 : 220);
 }
 
 function makeCard(item) {
   const card = document.createElement('button');
   card.className = `card ${item.surprise ? 'surprise' : ''}`;
   card.style.setProperty('--card-bg', gradient(item));
-  if (item.image) card.style.backgroundImage = `linear-gradient(0deg, rgba(0,0,0,.7), rgba(0,0,0,.1)), url('${item.image}')`;
+  if (item.image) card.style.backgroundImage = `linear-gradient(0deg, rgba(0,0,0,.72), rgba(0,0,0,.12)), url('${item.image}')`;
   card.innerHTML = item.surprise
     ? `<div class="card-title">Surprise Me</div><div class="card-sub">Movie Night pick</div>`
     : `<div class="progress"><span style="width:${item.progress || '0%'}"></span></div><div class="card-title">${item.title}</div><div class="card-sub">${item.sub || ''}</div>`;
@@ -66,21 +100,39 @@ function progressFromUserData(item) {
   return '0%';
 }
 
+function remainingTime(item) {
+  const runtimeTicks = item.RunTimeTicks || 0;
+  const playedTicks = item.UserData?.PlaybackPositionTicks || 0;
+  if (!runtimeTicks || !playedTicks) return '';
+  const remainingTicks = Math.max(0, runtimeTicks - playedTicks);
+  const remaining = ticksToRuntime(remainingTicks);
+  return remaining ? `${remaining} left` : '';
+}
+
+function imageTagUrl(api, item, type, width = 900) {
+  if (!item?.Id) return '';
+  return `${api.serverUrl}/Items/${item.Id}/Images/${type}?fillWidth=${width}&quality=92`;
+}
+
 function jellyfinToMedia(api, item, label = '') {
-  const image = api.imageUrl(item, 'Primary', 520);
-  const backdrop = item.BackdropImageTags?.length ? `${api.serverUrl}/Items/${item.Id}/Images/Backdrop?fillWidth=1200&quality=90` : image;
+  const color = hashColor(item.Id || item.Name || 'ruflix');
+  const image = imageTagUrl(api, item, 'Primary', 520);
+  const backdrop = item.BackdropImageTags?.length ? imageTagUrl(api, item, 'Backdrop', 1500) : image;
+  const logo = item.ImageTags?.Logo ? imageTagUrl(api, item, 'Logo', 700) : '';
+  const progressLabel = remainingTime(item);
   return {
     title: item.Name || 'Untitled',
-    sub: label || item.Type || '',
+    sub: progressLabel || label || item.Type || '',
     year: item.ProductionYear || '',
-    rating: item.OfficialRating || item.CommunityRating ? String(item.OfficialRating || item.CommunityRating) : '',
+    rating: item.OfficialRating || (item.CommunityRating ? `${Number(item.CommunityRating).toFixed(1)} rating` : ''),
     runtime: ticksToRuntime(item.RunTimeTicks),
     genre: item.Genres?.[0] || item.Type || '',
     progress: progressFromUserData(item),
-    colors: ['#162338', '#07090d'],
+    colors: [color, '#07090d'],
     desc: item.Overview || 'No overview available yet.',
     image,
     backdrop,
+    logo,
     eyebrow: label || item.Type || 'From Jellyfin'
   };
 }
@@ -94,12 +146,22 @@ function demoRows() {
   };
 }
 
+function renderNav(libraries = []) {
+  libraryNav.innerHTML = '';
+  libraries.slice(0, 7).forEach(view => {
+    const button = document.createElement('button');
+    button.className = 'nav-item';
+    button.innerHTML = `<span>${view.Name}</span>`;
+    libraryNav.appendChild(button);
+  });
+}
+
 function renderAll(rows) {
   renderRow('continueRow', rows.continueRow);
   renderRow('recentRow', rows.recentRow);
   renderRow('favoritesRow', rows.favoritesRow);
   renderRow('tonightRow', rows.tonightRow);
-  setHero(rows.continueRow[0] || rows.recentRow[0] || demoMedia[0]);
+  setHero(rows.continueRow[0] || rows.recentRow[0] || demoMedia[0], true);
 }
 
 async function loadJellyfinData() {
@@ -109,6 +171,7 @@ async function loadJellyfinData() {
   const userId = localStorage.getItem(keys.userId);
   if (!serverUrl || !token || !userId || !window.JellyfinApi) {
     dataStatus.textContent = 'Demo data';
+    renderNav([{ Name: 'Movies' }, { Name: 'TV Shows' }, { Name: 'Live TV' }]);
     renderAll(demoRows());
     return;
   }
@@ -119,15 +182,18 @@ async function loadJellyfinData() {
     const user = await api.currentUser();
     profileName.textContent = user.Name || 'Jellyfin';
 
-    const latestRaw = await api.latest(12);
-    const resumeRaw = await api.resume(12);
+    const librariesRaw = await api.libraries();
+    renderNav(librariesRaw.Items || []);
+
+    const latestRaw = await api.latest(16);
+    const resumeRaw = await api.resume(16);
     const latest = (latestRaw || []).map(item => jellyfinToMedia(api, item, 'Recently Added'));
     const resume = (resumeRaw.Items || []).map(item => jellyfinToMedia(api, item, 'Continue Watching'));
     const favorites = latest.slice(0, 8).map(item => ({ ...item, sub: 'Family Favorite', eyebrow: 'Family Favorite' }));
     const tonight = [{ title: 'Surprise Me', sub: 'Pick for me', colors: ['rgba(255,176,32,.35)', '#1b1204'], surprise: true }, ...latest.slice(0, 8)];
 
     renderAll({
-      continueRow: resume.length ? resume : latest.slice(0, 6),
+      continueRow: resume.length ? resume : latest.slice(0, 8),
       recentRow: latest.length ? latest : demoRows().recentRow,
       favoritesRow: favorites.length ? favorites : demoRows().favoritesRow,
       tonightRow: tonight
@@ -136,6 +202,7 @@ async function loadJellyfinData() {
   } catch (error) {
     console.error(error);
     dataStatus.textContent = 'Jellyfin load failed - demo data';
+    renderNav([{ Name: 'Movies' }, { Name: 'TV Shows' }, { Name: 'Live TV' }]);
     renderAll(demoRows());
   }
 }
