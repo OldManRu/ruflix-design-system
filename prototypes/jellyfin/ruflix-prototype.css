@@ -1,163 +1,265 @@
 /*
-  RuFlix Jellyfin CSS Prototype
+  RuFlix Jellyfin CSS Prototype — Opinionated v2
   Sprint 2: Cinematic Moments
 
-  Paste this into Jellyfin Dashboard > General > Custom CSS.
+  Paste into Jellyfin Dashboard > General > Custom CSS.
 
-  This CSS is intentionally a prototype layer. It focuses on:
-  - dark cinematic base
-  - card lift/focus behavior
-  - soft ambient glow
-  - calmer shelves
-  - button polish
-  - Movie Night visual treatment where matching navigation text exists
+  This version intentionally pushes harder than v1 so the change is obvious:
+  - deeper theater background
+  - stronger ambient glow
+  - larger, softer cards
+  - more cinematic hover/focus
+  - reduced default Jellyfin chrome
+  - warmer primary actions
+  - detail page scrims
+  - playback overlay polish
 
-  Limitations:
-  - CSS cannot generate a true Movie Night shelf.
-  - CSS cannot play the projector-start sound.
-  - CSS cannot create full stateful transitions without JavaScript.
+  CSS-only limitations remain:
+  - cannot create real Movie Night state
+  - cannot generate Tonight/Movie Night shelf
+  - cannot play projector audio
+  - cannot reorder Jellyfin content logic
 */
 
 :root {
-  --ruflix-bg: #08090d;
-  --ruflix-bg-2: #0b0e14;
-  --ruflix-surface: rgba(18, 21, 29, 0.72);
-  --ruflix-surface-strong: rgba(24, 28, 38, 0.88);
-  --ruflix-text: #ffffff;
-  --ruflix-text-soft: #c9ced8;
-  --ruflix-muted: #8f96a3;
+  --ruflix-bg: #050609;
+  --ruflix-bg-2: #090b10;
+  --ruflix-panel: rgba(11, 13, 18, 0.78);
+  --ruflix-panel-strong: rgba(14, 17, 24, 0.94);
+  --ruflix-line: rgba(255, 255, 255, 0.08);
+  --ruflix-text: #f8f8fb;
+  --ruflix-text-soft: #c7ccd6;
+  --ruflix-muted: #858b98;
   --ruflix-red: #e50914;
-  --ruflix-red-hover: #f12a33;
+  --ruflix-red-2: #ff333d;
   --ruflix-amber: #ffb020;
-  --ruflix-amber-soft: rgba(255, 176, 32, 0.28);
-  --ruflix-focus: rgba(255, 255, 255, 0.9);
-  --ruflix-radius-sm: 8px;
-  --ruflix-radius-md: 12px;
-  --ruflix-radius-lg: 18px;
+  --ruflix-amber-2: #ffd27a;
+  --ruflix-radius-sm: 10px;
+  --ruflix-radius-md: 16px;
+  --ruflix-radius-lg: 24px;
   --ruflix-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-/* Base atmosphere */
+/* Reset the default Jellyfin feel harder */
+html,
 body,
 .backgroundContainer,
-.skinHeader,
-.mainDrawer,
+.ui-body-a,
+.ui-page-theme-a,
 .page,
-.emby-scroller {
-  background-color: var(--ruflix-bg) !important;
+.libraryPage,
+.homePage,
+.emby-scroller,
+.scrollFrameY,
+.padded-left,
+.padded-right {
+  background: var(--ruflix-bg) !important;
   color: var(--ruflix-text) !important;
 }
 
+body {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+  letter-spacing: -0.01em;
+}
+
+/* Persistent cinematic room light */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
-  pointer-events: none;
   z-index: 0;
+  pointer-events: none;
   background:
-    radial-gradient(circle at 72% 18%, rgba(229, 9, 20, 0.16), transparent 30%),
-    radial-gradient(circle at 28% 72%, rgba(255, 176, 32, 0.08), transparent 36%),
-    linear-gradient(135deg, rgba(8, 9, 13, 0.92), rgba(11, 14, 20, 0.98));
-  animation: ruflixAmbientBreath 18s var(--ruflix-ease) infinite alternate;
+    radial-gradient(circle at 80% 10%, rgba(229, 9, 20, 0.26), transparent 34%),
+    radial-gradient(circle at 14% 82%, rgba(255, 176, 32, 0.13), transparent 42%),
+    radial-gradient(circle at 52% 46%, rgba(255, 255, 255, 0.035), transparent 44%),
+    linear-gradient(135deg, #050609 0%, #080a10 42%, #030407 100%);
+  animation: ruflixAmbientBreath 16s var(--ruflix-ease) infinite alternate;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.014) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(circle at center, black 0%, transparent 70%);
+  opacity: 0.28;
 }
 
 @keyframes ruflixAmbientBreath {
-  from { opacity: 0.82; transform: scale(1); }
-  to { opacity: 1; transform: scale(1.025); }
+  from { opacity: 0.78; transform: scale(1); filter: saturate(0.95); }
+  to { opacity: 1; transform: scale(1.035); filter: saturate(1.12); }
 }
 
-/* Header / chrome */
-.skinHeader {
-  backdrop-filter: blur(18px);
-  background: rgba(8, 9, 13, 0.58) !important;
+/* Keep app content above ambient layers */
+.skinHeader,
+.mainDrawer,
+.page,
+.libraryPage,
+.homePage,
+.detailPageWrapperContainer,
+.videoOsdBottom,
+.videoOsdHeader {
+  position: relative;
+  z-index: 1;
+}
+
+/* Header becomes quiet glass */
+.skinHeader,
+.skinHeader.semiTransparent,
+.skinHeader-withBackground {
+  background: linear-gradient(180deg, rgba(5,6,9,0.92), rgba(5,6,9,0.42)) !important;
+  backdrop-filter: blur(24px) saturate(1.2);
   box-shadow: none !important;
+  border-bottom: 1px solid rgba(255,255,255,0.045) !important;
 }
 
 .headerButton,
-.paper-icon-button-light {
+.paper-icon-button-light,
+.emby-button {
   border-radius: var(--ruflix-radius-md) !important;
-  transition: transform 160ms var(--ruflix-ease), background 160ms var(--ruflix-ease), box-shadow 160ms var(--ruflix-ease);
 }
 
 .headerButton:hover,
 .headerButton:focus-visible,
 .paper-icon-button-light:hover,
 .paper-icon-button-light:focus-visible {
-  background: rgba(255,255,255,0.08) !important;
+  background: rgba(255,255,255,0.1) !important;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.16), 0 16px 40px rgba(0,0,0,0.35) !important;
   transform: translateY(-1px);
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.18), 0 12px 30px rgba(0,0,0,0.28);
 }
 
-/* Drawer / navigation */
+/* Sidebar / drawer */
 .mainDrawer,
-.drawerContent {
-  background: rgba(8, 9, 13, 0.88) !important;
-  backdrop-filter: blur(22px);
-  border-right: 1px solid rgba(255,255,255,0.08);
+.drawerContent,
+.navMenu {
+  background: linear-gradient(180deg, rgba(5,6,9,0.98), rgba(8,10,15,0.94)) !important;
+  backdrop-filter: blur(28px) saturate(1.15);
+}
+
+.mainDrawer {
+  border-right: 1px solid rgba(255,255,255,0.08) !important;
+  box-shadow: 18px 0 60px rgba(0,0,0,0.34) !important;
 }
 
 .navMenuOption,
 .emby-button.navMenuOption {
-  border-radius: var(--ruflix-radius-md) !important;
-  margin: 4px 12px !important;
-  transition: background 180ms var(--ruflix-ease), transform 180ms var(--ruflix-ease), box-shadow 180ms var(--ruflix-ease), color 180ms var(--ruflix-ease);
+  margin: 6px 14px !important;
+  min-height: 46px !important;
+  border-radius: 15px !important;
+  color: var(--ruflix-text-soft) !important;
+  transition:
+    transform 180ms var(--ruflix-ease),
+    background 180ms var(--ruflix-ease),
+    box-shadow 180ms var(--ruflix-ease),
+    color 180ms var(--ruflix-ease) !important;
 }
 
 .navMenuOption:hover,
 .navMenuOption:focus-visible,
-.navMenuOption-selected {
-  background: rgba(255,255,255,0.08) !important;
-  transform: translateX(2px);
-  box-shadow: inset 2px 0 0 var(--ruflix-red);
+.navMenuOption-selected,
+.navMenuOption.emby-button:hover,
+.navMenuOption.emby-button:focus-visible {
+  color: #fff !important;
+  background: linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.045)) !important;
+  transform: translateX(4px);
+  box-shadow:
+    inset 3px 0 0 var(--ruflix-red),
+    0 10px 28px rgba(0,0,0,0.22) !important;
 }
 
-/* Movie Night navigation highlight.
-   This targets any nav item that contains a link/title mentioning Movie Night.
-   Browser support for :has() is modern but may vary inside some WebView contexts.
-*/
+/* Optional Movie Night target if you create a matching nav/link/library label */
 .navMenuOption:has(.navMenuOptionText[title*="Movie Night"]),
-.navMenuOption:has(.navMenuOptionText[title*="Movie night"]),
 .navMenuOption:has(span[title*="Movie Night"]),
+.navMenuOption:has(.navMenuOptionText[title*="Movie night"]),
 .navMenuOption:has(span[title*="Movie night"]) {
-  color: #fff5d6 !important;
+  color: #fff4d0 !important;
   background:
-    linear-gradient(135deg, rgba(255,176,32,0.16), rgba(255,176,32,0.05)) !important;
+    linear-gradient(135deg, rgba(255,176,32,0.22), rgba(255,176,32,0.055)) !important;
   box-shadow:
-    0 0 0 1px rgba(255,176,32,0.18),
-    0 0 28px rgba(255,176,32,0.18),
-    inset 0 0 22px rgba(255,176,32,0.08) !important;
+    0 0 0 1px rgba(255,176,32,0.20),
+    0 0 34px rgba(255,176,32,0.22),
+    inset 0 0 30px rgba(255,176,32,0.10) !important;
 }
 
 .navMenuOption:has(.navMenuOptionText[title*="Movie Night"]):hover,
-.navMenuOption:has(.navMenuOptionText[title*="Movie Night"]):focus-visible,
 .navMenuOption:has(span[title*="Movie Night"]):hover,
+.navMenuOption:has(.navMenuOptionText[title*="Movie Night"]):focus-visible,
 .navMenuOption:has(span[title*="Movie Night"]):focus-visible {
-  transform: translateX(3px) scale(1.01);
+  color: #fff !important;
+  transform: translateX(5px) scale(1.015);
   box-shadow:
     0 0 0 1px rgba(255,176,32,0.38),
-    0 0 38px rgba(255,176,32,0.28),
-    inset 0 0 28px rgba(255,176,32,0.12) !important;
+    0 0 48px rgba(255,176,32,0.35),
+    inset 0 0 36px rgba(255,176,32,0.16) !important;
 }
 
-/* Cards / shelves */
+/* Home content spacing */
+.homePage .sections,
+.homePage .verticalSection,
+.homePage .section0,
+.homePage .section1,
+.homePage .section2 {
+  padding-top: 0.6rem !important;
+}
+
+.padded-left,
+.layout-desktop .padded-left {
+  padding-left: clamp(1.25rem, 2.4vw, 3rem) !important;
+}
+
+.padded-right,
+.layout-desktop .padded-right {
+  padding-right: clamp(1.25rem, 2.4vw, 3rem) !important;
+}
+
+.sectionTitle,
+.homePage .sectionTitle,
+h2,
+.listHeader {
+  color: var(--ruflix-text) !important;
+  font-weight: 650 !important;
+  letter-spacing: -0.035em !important;
+  margin-bottom: 0.65rem !important;
+  text-shadow: 0 10px 28px rgba(0,0,0,0.45);
+}
+
+/* Cards become much more cinematic */
 .card,
 .cardBox,
+.cardScalable,
 .visualCardBox,
-.itemDetailImage,
-.backdropCard,
+.cardImageContainer,
+.cardContent,
 .portraitCard,
-.squareCard {
+.backdropCard,
+.squareCard,
+.overflowBackdropCard,
+.itemDetailImage {
   border-radius: var(--ruflix-radius-md) !important;
+}
+
+.cardBox,
+.visualCardBox,
+.cardScalable {
   overflow: hidden !important;
+  background: rgba(255,255,255,0.035) !important;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.28) !important;
 }
 
 .card,
-.cardBox {
+.cardBox,
+.cardScalable {
   transition:
-    transform 180ms var(--ruflix-ease),
-    box-shadow 180ms var(--ruflix-ease),
-    filter 180ms var(--ruflix-ease),
-    opacity 180ms var(--ruflix-ease);
+    transform 190ms var(--ruflix-ease),
+    box-shadow 190ms var(--ruflix-ease),
+    filter 190ms var(--ruflix-ease),
+    opacity 190ms var(--ruflix-ease) !important;
   transform-origin: center center;
 }
 
@@ -165,98 +267,139 @@ body::before {
 .card:focus-within,
 .cardBox:hover,
 .cardBox:focus-within,
-.focuscontainer-x .card:focus-within {
-  transform: translateY(-8px) scale(1.04);
+.cardScalable:hover,
+.cardScalable:focus-within,
+.focuscontainer-x .card:focus-within,
+.focuscontainer-x .cardBox:focus-within {
+  transform: translateY(-10px) scale(1.055) !important;
+  z-index: 20 !important;
+  filter: saturate(1.14) brightness(1.08);
   box-shadow:
-    0 18px 42px rgba(0,0,0,0.44),
+    0 24px 60px rgba(0,0,0,0.52),
     0 0 0 1px rgba(255,255,255,0.18),
-    0 0 28px rgba(229,9,20,0.14);
-  filter: saturate(1.08) brightness(1.06);
-  z-index: 5;
+    0 0 34px rgba(229,9,20,0.18) !important;
 }
 
 .cardImage,
+.coveredImage,
 .cardContent,
-.cardScalable {
-  transition: filter 220ms var(--ruflix-ease), transform 220ms var(--ruflix-ease);
+.cardPadder,
+.blurhash-canvas {
+  transition: transform 260ms var(--ruflix-ease), filter 260ms var(--ruflix-ease), opacity 260ms var(--ruflix-ease) !important;
 }
 
 .card:hover .cardImage,
-.card:focus-within .cardImage {
-  filter: brightness(1.08) saturate(1.08);
+.card:focus-within .cardImage,
+.card:hover .coveredImage,
+.card:focus-within .coveredImage {
+  transform: scale(1.025);
+  filter: brightness(1.10) saturate(1.14) contrast(1.03);
 }
 
 .cardText,
+.cardText-first,
 .cardText-secondary,
+.listItemBodyText,
 .listItemBodyTextSecondary {
   color: var(--ruflix-text-soft) !important;
+  text-shadow: 0 6px 20px rgba(0,0,0,0.45);
 }
 
-.sectionTitle,
-.homePage .sectionTitle,
-h2 {
-  color: var(--ruflix-text) !important;
-  letter-spacing: -0.02em;
+.cardText-first {
+  color: #fff !important;
+  font-weight: 620 !important;
 }
 
-/* Progress bars */
-.itemProgressBarForeground,
-.playedIndicator,
-.mdl-slider__background-lower {
-  background: linear-gradient(90deg, var(--ruflix-red), var(--ruflix-red-hover)) !important;
+/* Larger visual density for many card rows */
+.itemsContainer .card {
+  margin-inline: 0.26rem !important;
 }
 
-.itemProgressBar {
-  background: rgba(255,255,255,0.16) !important;
-  height: 4px !important;
+/* Progress bars become signature red */
+.itemProgressBar,
+.mdl-slider__background-upper {
+  background: rgba(255,255,255,0.14) !important;
+  height: 5px !important;
   border-radius: 999px !important;
   overflow: hidden;
 }
 
-.card:hover .itemProgressBar,
-.card:focus-within .itemProgressBar {
-  height: 5px !important;
-  box-shadow: 0 0 12px rgba(229,9,20,0.38);
+.itemProgressBarForeground,
+.playedIndicator,
+.mdl-slider__background-lower,
+.mdl-slider__background-lower::before {
+  background: linear-gradient(90deg, var(--ruflix-red), var(--ruflix-red-2)) !important;
+  box-shadow: 0 0 16px rgba(229,9,20,0.42) !important;
 }
 
 /* Buttons */
-.emby-button,
-.button-submit,
-.button-flat,
-.button-link {
-  border-radius: var(--ruflix-radius-md) !important;
-  transition: transform 150ms var(--ruflix-ease), background 150ms var(--ruflix-ease), box-shadow 150ms var(--ruflix-ease), color 150ms var(--ruflix-ease);
-}
-
 .button-submit,
 .raised.button-submit,
-.emby-button.raised {
-  background: linear-gradient(180deg, var(--ruflix-red-hover), var(--ruflix-red)) !important;
-  box-shadow: 0 12px 26px rgba(229,9,20,0.26) !important;
+.emby-button.raised,
+.btnPlayTrailer,
+.btnResume,
+.btnPlay,
+.detailButton.raised {
+  color: #fff !important;
+  background: linear-gradient(180deg, var(--ruflix-red-2), var(--ruflix-red)) !important;
+  box-shadow: 0 16px 36px rgba(229,9,20,0.30) !important;
+  border-radius: 16px !important;
+}
+
+.emby-button,
+.button-flat,
+.detailButton,
+.listItemButton {
+  transition:
+    transform 160ms var(--ruflix-ease),
+    background 160ms var(--ruflix-ease),
+    box-shadow 160ms var(--ruflix-ease),
+    color 160ms var(--ruflix-ease) !important;
 }
 
 .emby-button:hover,
-.emby-button:focus-visible {
-  transform: translateY(-1px);
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.2), 0 16px 34px rgba(0,0,0,0.32) !important;
+.emby-button:focus-visible,
+.detailButton:hover,
+.detailButton:focus-visible,
+.listItemButton:hover,
+.listItemButton:focus-visible {
+  transform: translateY(-2px);
+  background-color: rgba(255,255,255,0.10) !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.18),
+    0 18px 38px rgba(0,0,0,0.32) !important;
 }
 
-/* Detail pages */
+/* Dialogs / panels */
+.dialog,
+.formDialogHeader,
+.formDialogFooter,
+.actionSheet,
+.paperList,
+.listItem,
+.cardContent-shadow,
+.nowPlayingPageImage,
+.itemSelectionPanel {
+  background: var(--ruflix-panel-strong) !important;
+  color: var(--ruflix-text) !important;
+  border-radius: var(--ruflix-radius-lg) !important;
+  border: 1px solid var(--ruflix-line) !important;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.55) !important;
+  backdrop-filter: blur(22px) saturate(1.15);
+}
+
+/* Detail pages: make them feel less default */
 .detailPageWrapperContainer,
 .detailPagePrimaryContainer,
-.detailImageContainer {
+.detailPageContent,
+.detailImageContainer,
+.itemBackdrop {
   background: transparent !important;
 }
 
-.detailLogo,
-.itemName,
-.parentName {
-  filter: drop-shadow(0 12px 28px rgba(0,0,0,0.58));
-}
-
-.detailPageContent {
-  position: relative;
-  z-index: 1;
+.detailPageBackdropContainer,
+.backdropContainer {
+  opacity: 1 !important;
 }
 
 .detailPageBackdropContainer::after,
@@ -266,66 +409,125 @@ h2 {
   inset: 0;
   pointer-events: none;
   background:
-    linear-gradient(90deg, rgba(8,9,13,0.96) 0%, rgba(8,9,13,0.72) 38%, rgba(8,9,13,0.24) 100%),
-    linear-gradient(0deg, rgba(8,9,13,1) 0%, rgba(8,9,13,0.2) 44%, rgba(8,9,13,0.56) 100%);
+    radial-gradient(circle at 76% 18%, rgba(255,176,32,0.18), transparent 34%),
+    linear-gradient(90deg, rgba(5,6,9,0.98) 0%, rgba(5,6,9,0.82) 38%, rgba(5,6,9,0.32) 100%),
+    linear-gradient(0deg, rgba(5,6,9,1) 0%, rgba(5,6,9,0.25) 50%, rgba(5,6,9,0.68) 100%) !important;
 }
 
-/* Metadata/chips where Jellyfin exposes pill-like buttons/links */
+.itemName,
+.parentName,
+.detailLogo {
+  color: #fff !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.045em !important;
+  text-shadow: 0 18px 48px rgba(0,0,0,0.72);
+  filter: drop-shadow(0 18px 40px rgba(0,0,0,0.55));
+}
+
+.itemMiscInfo,
+.mediaInfoItems {
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
 .mediaInfoItem,
 .itemMiscInfo > * {
-  border-radius: 999px;
-  background: rgba(255,255,255,0.07);
-  padding: 4px 9px;
+  border-radius: 999px !important;
+  background: rgba(255,255,255,0.075) !important;
+  border: 1px solid rgba(255,255,255,0.065) !important;
+  padding: 0.25rem 0.62rem !important;
   color: var(--ruflix-text-soft) !important;
+  backdrop-filter: blur(10px);
 }
 
-/* Playback controls */
+.overview,
+.detailOverview,
+.itemOverview {
+  color: var(--ruflix-text-soft) !important;
+  line-height: 1.55 !important;
+  max-width: 68ch;
+}
+
+/* Playback overlay */
 .videoOsdBottom,
 .videoOsdHeader,
 .nowPlayingBar,
 .osdControls {
-  background: linear-gradient(0deg, rgba(0,0,0,0.72), rgba(0,0,0,0.0)) !important;
-  backdrop-filter: blur(10px);
+  background: linear-gradient(0deg, rgba(0,0,0,0.78), rgba(0,0,0,0.0)) !important;
+  backdrop-filter: blur(16px) saturate(1.1);
+}
+
+.videoOsdHeader {
+  background: linear-gradient(180deg, rgba(0,0,0,0.58), rgba(0,0,0,0.0)) !important;
 }
 
 .videoOsdBottom .paper-icon-button-light,
-.osdControls .paper-icon-button-light {
+.osdControls .paper-icon-button-light,
+.videoOsdHeader .paper-icon-button-light {
   border-radius: 999px !important;
-  background: rgba(0,0,0,0.22) !important;
+  background: rgba(0,0,0,0.28) !important;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.08) !important;
 }
 
 .videoOsdBottom .paper-icon-button-light:hover,
 .videoOsdBottom .paper-icon-button-light:focus-visible,
 .osdControls .paper-icon-button-light:hover,
-.osdControls .paper-icon-button-light:focus-visible {
-  background: rgba(255,255,255,0.12) !important;
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.22), 0 0 24px rgba(255,255,255,0.14) !important;
+.osdControls .paper-icon-button-light:focus-visible,
+.videoOsdHeader .paper-icon-button-light:hover,
+.videoOsdHeader .paper-icon-button-light:focus-visible {
+  background: rgba(255,255,255,0.14) !important;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.24), 0 0 28px rgba(255,255,255,0.16) !important;
+  transform: scale(1.05);
 }
 
-/* Launch-style fade for app surfaces */
+/* Inputs */
+.emby-input,
+.emby-textarea,
+.emby-select,
+.inputContainer input,
+.searchfields input {
+  color: #fff !important;
+  background: rgba(255,255,255,0.065) !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+  border-radius: 14px !important;
+  backdrop-filter: blur(12px);
+}
+
+.emby-input:focus,
+.emby-textarea:focus,
+.emby-select:focus,
+.searchfields input:focus {
+  border-color: rgba(255,255,255,0.32) !important;
+  box-shadow: 0 0 0 3px rgba(229,9,20,0.24), 0 16px 34px rgba(0,0,0,0.28) !important;
+}
+
+/* Entry moment */
 .page,
 .homePage,
-.detailPageWrapperContainer {
-  animation: ruflixPageEnter 520ms var(--ruflix-ease) both;
+.detailPageWrapperContainer,
+.libraryPage {
+  animation: ruflixPageEnter 650ms var(--ruflix-ease) both;
 }
 
 @keyframes ruflixPageEnter {
-  from { opacity: 0; transform: translateY(8px); filter: blur(4px); }
+  from { opacity: 0; transform: translateY(12px); filter: blur(6px); }
   to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+/* Make focus impossible to miss */
+*:focus-visible {
+  outline: 2px solid rgba(255,255,255,0.9) !important;
+  outline-offset: 3px !important;
 }
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-
-  body::before {
-    animation: none !important;
-  }
+  body::before { animation: none !important; }
 }
