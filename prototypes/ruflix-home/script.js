@@ -40,23 +40,31 @@ function gradient(item) {
   return `linear-gradient(135deg, ${item.colors[0]}, ${item.colors[1]})`;
 }
 
-function heroImage(item) {
-  if (item.backdrop) return `linear-gradient(135deg, rgba(5,6,9,.20), rgba(5,6,9,.08)), url('${item.backdrop}')`;
-  return gradient(item);
+function setBackdropGradient(layer, item) {
+  layer.style.background = gradient(item);
 }
 
 function preloadImage(url) {
-  if (!url) return Promise.resolve();
+  if (!url) return Promise.resolve(null);
   return new Promise(resolve => {
     const image = new Image();
-    image.onload = resolve;
-    image.onerror = resolve;
+    image.onload = () => resolve(url);
+    image.onerror = () => resolve(null);
     image.src = url;
   });
 }
 
-function swapBackdrop(item, immediate = false) {
-  inactiveBackdrop.style.backgroundImage = heroImage(item);
+function swapBackdrop(item, loadedUrl, immediate = false) {
+  const img = inactiveBackdrop.querySelector('img');
+  inactiveBackdrop.classList.remove('has-image');
+  setBackdropGradient(inactiveBackdrop, item);
+
+  if (loadedUrl) {
+    img.src = loadedUrl;
+    inactiveBackdrop.classList.add('has-image');
+  } else {
+    img.removeAttribute('src');
+  }
 
   if (immediate) {
     activeBackdrop.classList.remove('is-visible');
@@ -99,14 +107,13 @@ function setHero(item, immediate = false) {
 
   heroTimer = setTimeout(async () => {
     const targetTitle = item.title;
-    const targetImage = item.backdrop || '';
-    await preloadImage(targetImage);
+    const loadedUrl = await preloadImage(item.backdrop || item.image || '');
     if (requestId !== heroRequestId) return;
 
     activeHero = targetTitle;
     hero.classList.add('is-changing');
     document.documentElement.style.setProperty('--glow', `${item.colors[0]}66`);
-    swapBackdrop(item, immediate);
+    swapBackdrop(item, loadedUrl, immediate);
 
     setTimeout(() => {
       if (requestId !== heroRequestId) return;
