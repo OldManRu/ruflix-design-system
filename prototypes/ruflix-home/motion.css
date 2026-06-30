@@ -35,18 +35,31 @@
   to { transform: translate3d(24px, -18px, 0); }
 }
 
+.shelf {
+  padding-top: 18px;
+  margin-top: 20px;
+}
+
+.row {
+  scroll-behavior: smooth;
+  padding-top: 28px;
+  overflow-y: visible;
+}
+
 .card {
   transition:
     transform 360ms cubic-bezier(.18, .9, .2, 1),
     box-shadow 360ms cubic-bezier(.18, .9, .2, 1),
     filter 360ms cubic-bezier(.18, .9, .2, 1);
   will-change: transform, box-shadow, filter;
+  scroll-margin-top: 42px;
+  scroll-margin-inline: 34px;
 }
 
 .card:hover,
 .card:focus-visible,
 .card.is-focused {
-  transform: perspective(900px) translateY(-14px) rotateX(2deg) rotateY(-1.25deg) scale(1.055);
+  transform: perspective(900px) translateY(-10px) rotateX(2deg) rotateY(-1.25deg) scale(1.045);
 }
 
 .card:active {
@@ -57,10 +70,6 @@
 .card.is-focused {
   box-shadow: var(--ruflix-remote-ring);
   outline: none;
-}
-
-.row {
-  scroll-behavior: smooth;
 }
 
 body.movie-night .hero-backdrop.is-visible img,
