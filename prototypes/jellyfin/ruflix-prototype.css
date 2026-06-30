@@ -1,0 +1,331 @@
+/*
+  RuFlix Jellyfin CSS Prototype
+  Sprint 2: Cinematic Moments
+
+  Paste this into Jellyfin Dashboard > General > Custom CSS.
+
+  This CSS is intentionally a prototype layer. It focuses on:
+  - dark cinematic base
+  - card lift/focus behavior
+  - soft ambient glow
+  - calmer shelves
+  - button polish
+  - Movie Night visual treatment where matching navigation text exists
+
+  Limitations:
+  - CSS cannot generate a true Movie Night shelf.
+  - CSS cannot play the projector-start sound.
+  - CSS cannot create full stateful transitions without JavaScript.
+*/
+
+:root {
+  --ruflix-bg: #08090d;
+  --ruflix-bg-2: #0b0e14;
+  --ruflix-surface: rgba(18, 21, 29, 0.72);
+  --ruflix-surface-strong: rgba(24, 28, 38, 0.88);
+  --ruflix-text: #ffffff;
+  --ruflix-text-soft: #c9ced8;
+  --ruflix-muted: #8f96a3;
+  --ruflix-red: #e50914;
+  --ruflix-red-hover: #f12a33;
+  --ruflix-amber: #ffb020;
+  --ruflix-amber-soft: rgba(255, 176, 32, 0.28);
+  --ruflix-focus: rgba(255, 255, 255, 0.9);
+  --ruflix-radius-sm: 8px;
+  --ruflix-radius-md: 12px;
+  --ruflix-radius-lg: 18px;
+  --ruflix-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Base atmosphere */
+body,
+.backgroundContainer,
+.skinHeader,
+.mainDrawer,
+.page,
+.emby-scroller {
+  background-color: var(--ruflix-bg) !important;
+  color: var(--ruflix-text) !important;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 72% 18%, rgba(229, 9, 20, 0.16), transparent 30%),
+    radial-gradient(circle at 28% 72%, rgba(255, 176, 32, 0.08), transparent 36%),
+    linear-gradient(135deg, rgba(8, 9, 13, 0.92), rgba(11, 14, 20, 0.98));
+  animation: ruflixAmbientBreath 18s var(--ruflix-ease) infinite alternate;
+}
+
+@keyframes ruflixAmbientBreath {
+  from { opacity: 0.82; transform: scale(1); }
+  to { opacity: 1; transform: scale(1.025); }
+}
+
+/* Header / chrome */
+.skinHeader {
+  backdrop-filter: blur(18px);
+  background: rgba(8, 9, 13, 0.58) !important;
+  box-shadow: none !important;
+}
+
+.headerButton,
+.paper-icon-button-light {
+  border-radius: var(--ruflix-radius-md) !important;
+  transition: transform 160ms var(--ruflix-ease), background 160ms var(--ruflix-ease), box-shadow 160ms var(--ruflix-ease);
+}
+
+.headerButton:hover,
+.headerButton:focus-visible,
+.paper-icon-button-light:hover,
+.paper-icon-button-light:focus-visible {
+  background: rgba(255,255,255,0.08) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.18), 0 12px 30px rgba(0,0,0,0.28);
+}
+
+/* Drawer / navigation */
+.mainDrawer,
+.drawerContent {
+  background: rgba(8, 9, 13, 0.88) !important;
+  backdrop-filter: blur(22px);
+  border-right: 1px solid rgba(255,255,255,0.08);
+}
+
+.navMenuOption,
+.emby-button.navMenuOption {
+  border-radius: var(--ruflix-radius-md) !important;
+  margin: 4px 12px !important;
+  transition: background 180ms var(--ruflix-ease), transform 180ms var(--ruflix-ease), box-shadow 180ms var(--ruflix-ease), color 180ms var(--ruflix-ease);
+}
+
+.navMenuOption:hover,
+.navMenuOption:focus-visible,
+.navMenuOption-selected {
+  background: rgba(255,255,255,0.08) !important;
+  transform: translateX(2px);
+  box-shadow: inset 2px 0 0 var(--ruflix-red);
+}
+
+/* Movie Night navigation highlight.
+   This targets any nav item that contains a link/title mentioning Movie Night.
+   Browser support for :has() is modern but may vary inside some WebView contexts.
+*/
+.navMenuOption:has(.navMenuOptionText[title*="Movie Night"]),
+.navMenuOption:has(.navMenuOptionText[title*="Movie night"]),
+.navMenuOption:has(span[title*="Movie Night"]),
+.navMenuOption:has(span[title*="Movie night"]) {
+  color: #fff5d6 !important;
+  background:
+    linear-gradient(135deg, rgba(255,176,32,0.16), rgba(255,176,32,0.05)) !important;
+  box-shadow:
+    0 0 0 1px rgba(255,176,32,0.18),
+    0 0 28px rgba(255,176,32,0.18),
+    inset 0 0 22px rgba(255,176,32,0.08) !important;
+}
+
+.navMenuOption:has(.navMenuOptionText[title*="Movie Night"]):hover,
+.navMenuOption:has(.navMenuOptionText[title*="Movie Night"]):focus-visible,
+.navMenuOption:has(span[title*="Movie Night"]):hover,
+.navMenuOption:has(span[title*="Movie Night"]):focus-visible {
+  transform: translateX(3px) scale(1.01);
+  box-shadow:
+    0 0 0 1px rgba(255,176,32,0.38),
+    0 0 38px rgba(255,176,32,0.28),
+    inset 0 0 28px rgba(255,176,32,0.12) !important;
+}
+
+/* Cards / shelves */
+.card,
+.cardBox,
+.visualCardBox,
+.itemDetailImage,
+.backdropCard,
+.portraitCard,
+.squareCard {
+  border-radius: var(--ruflix-radius-md) !important;
+  overflow: hidden !important;
+}
+
+.card,
+.cardBox {
+  transition:
+    transform 180ms var(--ruflix-ease),
+    box-shadow 180ms var(--ruflix-ease),
+    filter 180ms var(--ruflix-ease),
+    opacity 180ms var(--ruflix-ease);
+  transform-origin: center center;
+}
+
+.card:hover,
+.card:focus-within,
+.cardBox:hover,
+.cardBox:focus-within,
+.focuscontainer-x .card:focus-within {
+  transform: translateY(-8px) scale(1.04);
+  box-shadow:
+    0 18px 42px rgba(0,0,0,0.44),
+    0 0 0 1px rgba(255,255,255,0.18),
+    0 0 28px rgba(229,9,20,0.14);
+  filter: saturate(1.08) brightness(1.06);
+  z-index: 5;
+}
+
+.cardImage,
+.cardContent,
+.cardScalable {
+  transition: filter 220ms var(--ruflix-ease), transform 220ms var(--ruflix-ease);
+}
+
+.card:hover .cardImage,
+.card:focus-within .cardImage {
+  filter: brightness(1.08) saturate(1.08);
+}
+
+.cardText,
+.cardText-secondary,
+.listItemBodyTextSecondary {
+  color: var(--ruflix-text-soft) !important;
+}
+
+.sectionTitle,
+.homePage .sectionTitle,
+h2 {
+  color: var(--ruflix-text) !important;
+  letter-spacing: -0.02em;
+}
+
+/* Progress bars */
+.itemProgressBarForeground,
+.playedIndicator,
+.mdl-slider__background-lower {
+  background: linear-gradient(90deg, var(--ruflix-red), var(--ruflix-red-hover)) !important;
+}
+
+.itemProgressBar {
+  background: rgba(255,255,255,0.16) !important;
+  height: 4px !important;
+  border-radius: 999px !important;
+  overflow: hidden;
+}
+
+.card:hover .itemProgressBar,
+.card:focus-within .itemProgressBar {
+  height: 5px !important;
+  box-shadow: 0 0 12px rgba(229,9,20,0.38);
+}
+
+/* Buttons */
+.emby-button,
+.button-submit,
+.button-flat,
+.button-link {
+  border-radius: var(--ruflix-radius-md) !important;
+  transition: transform 150ms var(--ruflix-ease), background 150ms var(--ruflix-ease), box-shadow 150ms var(--ruflix-ease), color 150ms var(--ruflix-ease);
+}
+
+.button-submit,
+.raised.button-submit,
+.emby-button.raised {
+  background: linear-gradient(180deg, var(--ruflix-red-hover), var(--ruflix-red)) !important;
+  box-shadow: 0 12px 26px rgba(229,9,20,0.26) !important;
+}
+
+.emby-button:hover,
+.emby-button:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.2), 0 16px 34px rgba(0,0,0,0.32) !important;
+}
+
+/* Detail pages */
+.detailPageWrapperContainer,
+.detailPagePrimaryContainer,
+.detailImageContainer {
+  background: transparent !important;
+}
+
+.detailLogo,
+.itemName,
+.parentName {
+  filter: drop-shadow(0 12px 28px rgba(0,0,0,0.58));
+}
+
+.detailPageContent {
+  position: relative;
+  z-index: 1;
+}
+
+.detailPageBackdropContainer::after,
+.backdropContainer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(8,9,13,0.96) 0%, rgba(8,9,13,0.72) 38%, rgba(8,9,13,0.24) 100%),
+    linear-gradient(0deg, rgba(8,9,13,1) 0%, rgba(8,9,13,0.2) 44%, rgba(8,9,13,0.56) 100%);
+}
+
+/* Metadata/chips where Jellyfin exposes pill-like buttons/links */
+.mediaInfoItem,
+.itemMiscInfo > * {
+  border-radius: 999px;
+  background: rgba(255,255,255,0.07);
+  padding: 4px 9px;
+  color: var(--ruflix-text-soft) !important;
+}
+
+/* Playback controls */
+.videoOsdBottom,
+.videoOsdHeader,
+.nowPlayingBar,
+.osdControls {
+  background: linear-gradient(0deg, rgba(0,0,0,0.72), rgba(0,0,0,0.0)) !important;
+  backdrop-filter: blur(10px);
+}
+
+.videoOsdBottom .paper-icon-button-light,
+.osdControls .paper-icon-button-light {
+  border-radius: 999px !important;
+  background: rgba(0,0,0,0.22) !important;
+}
+
+.videoOsdBottom .paper-icon-button-light:hover,
+.videoOsdBottom .paper-icon-button-light:focus-visible,
+.osdControls .paper-icon-button-light:hover,
+.osdControls .paper-icon-button-light:focus-visible {
+  background: rgba(255,255,255,0.12) !important;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.22), 0 0 24px rgba(255,255,255,0.14) !important;
+}
+
+/* Launch-style fade for app surfaces */
+.page,
+.homePage,
+.detailPageWrapperContainer {
+  animation: ruflixPageEnter 520ms var(--ruflix-ease) both;
+}
+
+@keyframes ruflixPageEnter {
+  from { opacity: 0; transform: translateY(8px); filter: blur(4px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  body::before {
+    animation: none !important;
+  }
+}
