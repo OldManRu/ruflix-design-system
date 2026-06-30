@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RuFlix Jellyfin Connection Test</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <section class="panel hero-panel">
+      <div>
+        <p class="eyebrow">RuFlix Alpha</p>
+        <h1>Jellyfin Connection Test</h1>
+        <p class="lede">Verify server access, login, libraries, latest media, resume items, image URLs, and playback URLs before we wire real data into the RuFlix experience.</p>
+      </div>
+      <div class="status-card" id="statusCard">
+        <span class="status-dot"></span>
+        <span id="statusText">Not connected</span>
+      </div>
+    </section>
+
+    <section class="panel form-panel">
+      <label>Jellyfin Server URL</label>
+      <input id="serverUrl" placeholder="https://jellyfin.example.com or http://192.168.1.50:8096">
+
+      <div class="grid two">
+        <div>
+          <label>Username</label>
+          <input id="username" autocomplete="username">
+        </div>
+        <div>
+          <label>Password</label>
+          <input id="password" type="password" autocomplete="current-password">
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="connectBtn" class="primary">Connect and Test</button>
+        <button id="useSavedBtn">Use Saved Token</button>
+        <button id="logoutBtn">Clear Token</button>
+      </div>
+
+      <p class="note">For local alpha testing, this stores your server URL and access token in this browser only.</p>
+    </section>
+
+    <section class="grid results">
+      <section class="panel"><h2>User</h2><pre id="userOutput">Waiting...</pre></section>
+      <section class="panel"><h2>Libraries</h2><div id="libraries" class="cards"></div></section>
+      <section class="panel wide"><h2>Latest Media</h2><div id="latest" class="media-grid"></div></section>
+      <section class="panel wide"><h2>Continue Watching</h2><div id="resume" class="media-grid"></div></section>
+      <section class="panel wide"><h2>Diagnostics</h2><pre id="logOutput">Ready.</pre></section>
+    </section>
+  </main>
+
+  <script src="jellyfin-api.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
