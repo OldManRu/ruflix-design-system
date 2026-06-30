@@ -26,6 +26,8 @@ let heroTimer = null;
 let activeHero = null;
 let activeBackdrop = heroBackdropA;
 let inactiveBackdrop = heroBackdropB;
+let heroRequestId = 0;
+let movieNightExitTimer = null;
 
 function hashColor(input) {
   const palette = ['#6b2b12', '#16324f', '#3b1d5a', '#0d475d', '#7c4418', '#173b2f', '#4a1833', '#26324a'];
@@ -41,6 +43,16 @@ function gradient(item) {
 function heroImage(item) {
   if (item.backdrop) return `linear-gradient(135deg, rgba(5,6,9,.20), rgba(5,6,9,.08)), url('${item.backdrop}')`;
   return gradient(item);
+}
+
+function preloadImage(url) {
+  if (!url) return Promise.resolve();
+  return new Promise(resolve => {
+    const image = new Image();
+    image.onload = resolve;
+    image.onerror = resolve;
+    image.src = url;
+  });
 }
 
 function swapBackdrop(item, immediate = false) {
@@ -61,35 +73,50 @@ function swapBackdrop(item, immediate = false) {
   inactiveBackdrop = previous;
 }
 
+function updateHeroCopy(item) {
+  heroTitle.textContent = item.title;
+  heroDesc.textContent = item.desc || 'No overview available yet.';
+  heroEyebrow.textContent = item.eyebrow || 'Featured';
+  heroMeta.innerHTML = [item.year, item.rating, item.runtime, item.genre].filter(Boolean).map(x => `<span>${x}</span>`).join('');
+
+  if (item.logo) {
+    heroLogo.src = item.logo;
+    heroLogo.classList.remove('hidden');
+    heroTitle.classList.add('hidden');
+  } else {
+    heroLogo.classList.add('hidden');
+    heroTitle.classList.remove('hidden');
+  }
+}
+
 function setHero(item, immediate = false) {
   if (item.surprise || !item.title) return;
   if (activeHero === item.title && !immediate) return;
-  activeHero = item.title;
 
   clearTimeout(heroTimer);
-  heroTimer = setTimeout(() => {
+  const requestId = ++heroRequestId;
+  const delay = immediate ? 0 : 200;
+
+  heroTimer = setTimeout(async () => {
+    const targetTitle = item.title;
+    const targetImage = item.backdrop || '';
+    await preloadImage(targetImage);
+    if (requestId !== heroRequestId) return;
+
+    activeHero = targetTitle;
     hero.classList.add('is-changing');
     document.documentElement.style.setProperty('--glow', `${item.colors[0]}66`);
     swapBackdrop(item, immediate);
 
     setTimeout(() => {
-      heroTitle.textContent = item.title;
-      heroDesc.textContent = item.desc || 'No overview available yet.';
-      heroEyebrow.textContent = item.eyebrow || 'Featured';
-      heroMeta.innerHTML = [item.year, item.rating, item.runtime, item.genre].filter(Boolean).map(x => `<span>${x}</span>`).join('');
+      if (requestId !== heroRequestId) return;
+      updateHeroCopy(item);
+    }, immediate ? 0 : 180);
 
-      if (item.logo) {
-        heroLogo.src = item.logo;
-        heroLogo.classList.remove('hidden');
-        heroTitle.classList.add('hidden');
-      } else {
-        heroLogo.classList.add('hidden');
-        heroTitle.classList.remove('hidden');
-      }
-    }, immediate ? 0 : 220);
-
-    setTimeout(() => hero.classList.remove('is-changing'), immediate ? 120 : 760);
-  }, immediate ? 0 : 200);
+    setTimeout(() => {
+      if (requestId === heroRequestId) hero.classList.remove('is-changing');
+    }, immediate ? 140 : 820);
+  }, delay);
 }
 
 function makeCard(item) {
@@ -233,23 +260,38 @@ async function loadJellyfinData() {
 }
 
 function enterMovieNight() {
-  document.body.classList.add('movie-night');
+  clearTimeout(movieNightExitTimer);
+  document.body.classList.remove('movie-night-exiting');
+  document.body.classList.add('movie-night-entering');
   movieNightBtn.classList.add('active');
-  tonightShelf.classList.remove('hidden');
-  tonightShelf.classList.add('show');
-  const firstTonight = document.querySelector('#tonightRow .card:not(.surprise)');
-  if (firstTonight) firstTonight.focus();
+  tonightShelf.classList.remove('hidden', 'leaving');
+  requestAnimationFrame(() => {
+    document.body.classList.add('movie-night');
+    tonightShelf.classList.add('show');
+  });
+  setTimeout(() => document.body.classList.remove('movie-night-entering'), 900);
+  setTimeout(() => {
+    const firstTonight = document.querySelector('#tonightRow .card:not(.surprise)');
+    if (firstTonight) firstTonight.focus();
+  }, 420);
 }
 
 function leaveMovieNight() {
-  document.body.classList.remove('movie-night');
+  clearTimeout(movieNightExitTimer);
+  document.body.classList.remove('movie-night-entering', 'movie-night');
+  document.body.classList.add('movie-night-exiting');
   movieNightBtn.classList.remove('active');
-  tonightShelf.classList.add('hidden');
   tonightShelf.classList.remove('show');
+  tonightShelf.classList.add('leaving');
+  movieNightExitTimer = setTimeout(() => {
+    tonightShelf.classList.add('hidden');
+    tonightShelf.classList.remove('leaving');
+    document.body.classList.remove('movie-night-exiting');
+  }, 820);
 }
 
 movieNightBtn.addEventListener('click', () => {
-  if (document.body.classList.contains('movie-night')) leaveMovieNight();
+  if (document.body.classList.contains('movie-night') || document.body.classList.contains('movie-night-entering')) leaveMovieNight();
   else enterMovieNight();
 });
 exitMovieNight.addEventListener('click', leaveMovieNight);
