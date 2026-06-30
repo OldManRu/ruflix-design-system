@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RuFlix Home Prototype</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="ambient" id="ambient"></div>
+
+  <aside class="sidebar">
+    <div class="brand"><span>Ru</span>Flix</div>
+    <nav>
+      <button class="nav-item active"><span>Home</span></button>
+      <button class="nav-item"><span>Movies</span></button>
+      <button class="nav-item"><span>TV Shows</span></button>
+      <button class="nav-item"><span>Live TV</span></button>
+      <div class="nav-divider"></div>
+      <button class="nav-item movie-night" id="movieNightBtn"><span>Movie Night</span></button>
+      <div class="nav-divider"></div>
+      <button class="nav-item"><span>Search</span></button>
+      <button class="nav-item"><span>Settings</span></button>
+    </nav>
+    <div class="profile"><div class="avatar"></div><span>Russel</span><span>v</span></div>
+  </aside>
+
+  <main class="app" id="app">
+    <header class="topbar">
+      <div class="search">Search your library</div>
+      <div class="time">8:42 PM</div>
+    </header>
+
+    <section class="hero" id="hero">
+      <div class="hero-copy">
+        <div class="eyebrow" id="heroEyebrow">Featured</div>
+        <h1 id="heroTitle">Beyond the Horizon</h1>
+        <div class="metadata" id="heroMeta">
+          <span>2024</span><span>PG-13</span><span>2h 18m</span><span>Adventure</span>
+        </div>
+        <p id="heroDesc">A quiet explorer crosses a distant world and discovers that the journey home may be the greatest adventure of all.</p>
+        <div class="actions"><button class="primary">Play</button><button class="secondary">More Info</button></div>
+      </div>
+    </section>
+
+    <section class="shelf hidden" id="tonightShelf">
+      <div class="shelf-title"><span>Tonight's Picks</span><button id="exitMovieNight">Exit Movie Night</button></div>
+      <div class="row" id="tonightRow"></div>
+    </section>
+
+    <section class="shelf">
+      <h2>Continue Watching</h2>
+      <div class="row" id="continueRow"></div>
+    </section>
+
+    <section class="shelf">
+      <h2>Recently Added</h2>
+      <div class="row" id="recentRow"></div>
+    </section>
+
+    <section class="shelf">
+      <h2>Family Favorites</h2>
+      <div class="row" id="favoritesRow"></div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
