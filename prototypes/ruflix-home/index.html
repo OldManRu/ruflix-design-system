@@ -13,9 +13,7 @@
     <div class="brand"><span>Ru</span>Flix</div>
     <nav>
       <button class="nav-item active"><span>Home</span></button>
-      <button class="nav-item"><span>Movies</span></button>
-      <button class="nav-item"><span>TV Shows</span></button>
-      <button class="nav-item"><span>Live TV</span></button>
+      <div id="libraryNav"></div>
       <div class="nav-divider"></div>
       <button class="nav-item movie-night" id="movieNightBtn"><span>Movie Night</span></button>
       <div class="nav-divider"></div>
@@ -33,8 +31,10 @@
     </header>
 
     <section class="hero" id="hero">
+      <div class="hero-backdrop" id="heroBackdrop"></div>
       <div class="hero-copy">
         <div class="eyebrow" id="heroEyebrow">Featured</div>
+        <img class="hero-logo hidden" id="heroLogo" alt="">
         <h1 id="heroTitle">Beyond the Horizon</h1>
         <div class="metadata" id="heroMeta">
           <span>2024</span><span>PG-13</span><span>2h 18m</span><span>Adventure</span>
