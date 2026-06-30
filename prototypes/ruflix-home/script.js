@@ -24,8 +24,6 @@ const libraryNav = document.getElementById('libraryNav');
 
 let heroTimer = null;
 let activeHero = null;
-let activeBackdrop = heroBackdropA;
-let inactiveBackdrop = heroBackdropB;
 let heroRequestId = 0;
 let movieNightExitTimer = null;
 
@@ -40,10 +38,6 @@ function gradient(item) {
   return `linear-gradient(135deg, ${item.colors[0]}, ${item.colors[1]})`;
 }
 
-function setBackdropGradient(layer, item) {
-  layer.style.background = gradient(item);
-}
-
 function preloadImage(url) {
   if (!url) return Promise.resolve(null);
   return new Promise(resolve => {
@@ -52,36 +46,6 @@ function preloadImage(url) {
     image.onerror = () => resolve(null);
     image.src = url;
   });
-}
-
-function swapBackdrop(item, loadedUrl, immediate = false) {
-  const img = inactiveBackdrop.querySelector('img');
-  inactiveBackdrop.classList.remove('has-image');
-  inactiveBackdrop.dataset.itemKey = item.key || item.title;
-  setBackdropGradient(inactiveBackdrop, item);
-
-  if (loadedUrl) {
-    img.src = loadedUrl;
-    img.alt = item.title;
-    inactiveBackdrop.classList.add('has-image');
-  } else {
-    img.removeAttribute('src');
-    img.alt = '';
-  }
-
-  if (immediate) {
-    activeBackdrop.classList.remove('is-visible');
-    inactiveBackdrop.classList.add('is-visible');
-  } else {
-    requestAnimationFrame(() => {
-      inactiveBackdrop.classList.add('is-visible');
-      activeBackdrop.classList.remove('is-visible');
-    });
-  }
-
-  const previous = activeBackdrop;
-  activeBackdrop = inactiveBackdrop;
-  inactiveBackdrop = previous;
 }
 
 function updateHeroCopy(item) {
@@ -101,6 +65,31 @@ function updateHeroCopy(item) {
   }
 }
 
+function setHeroArtwork(item, loadedUrl) {
+  const activeLayer = heroBackdropA;
+  const inactiveLayer = heroBackdropB;
+  const activeImg = activeLayer.querySelector('img');
+  const inactiveImg = inactiveLayer.querySelector('img');
+
+  inactiveLayer.classList.remove('is-visible', 'has-image');
+  inactiveImg.removeAttribute('src');
+  inactiveImg.alt = '';
+
+  activeLayer.dataset.itemKey = item.key || item.title;
+  activeLayer.style.background = gradient(item);
+  activeLayer.classList.add('is-visible');
+
+  if (loadedUrl) {
+    activeImg.src = loadedUrl;
+    activeImg.alt = item.title;
+    activeLayer.classList.add('has-image');
+  } else {
+    activeImg.removeAttribute('src');
+    activeImg.alt = '';
+    activeLayer.classList.remove('has-image');
+  }
+}
+
 function setHero(item, immediate = false) {
   if (item.surprise || !item.title) return;
   const itemKey = item.key || item.title;
@@ -108,25 +97,26 @@ function setHero(item, immediate = false) {
 
   clearTimeout(heroTimer);
   const requestId = ++heroRequestId;
-  const delay = immediate ? 0 : 200;
+  const delay = immediate ? 0 : 120;
 
   heroTimer = setTimeout(async () => {
-    const loadedUrl = await preloadImage(item.backdrop || item.image || '');
-    if (requestId !== heroRequestId) return;
-
     activeHero = itemKey;
     hero.classList.add('is-changing');
     document.documentElement.style.setProperty('--glow', `${item.colors[0]}66`);
-    swapBackdrop(item, loadedUrl, immediate);
 
-    setTimeout(() => {
-      if (requestId !== heroRequestId) return;
-      updateHeroCopy(item);
-    }, immediate ? 0 : 180);
+    // Correctness first: hide the previous image immediately so the new title is never paired with old artwork.
+    heroBackdropA.classList.remove('has-image');
+    heroBackdropA.style.background = gradient(item);
+    updateHeroCopy(item);
+
+    const loadedUrl = await preloadImage(item.backdrop || item.image || '');
+    if (requestId !== heroRequestId) return;
+
+    setHeroArtwork(item, loadedUrl);
 
     setTimeout(() => {
       if (requestId === heroRequestId) hero.classList.remove('is-changing');
-    }, immediate ? 140 : 820);
+    }, immediate ? 140 : 520);
   }, delay);
 }
 
