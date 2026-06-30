@@ -57,13 +57,16 @@ function preloadImage(url) {
 function swapBackdrop(item, loadedUrl, immediate = false) {
   const img = inactiveBackdrop.querySelector('img');
   inactiveBackdrop.classList.remove('has-image');
+  inactiveBackdrop.dataset.itemKey = item.key || item.title;
   setBackdropGradient(inactiveBackdrop, item);
 
   if (loadedUrl) {
     img.src = loadedUrl;
+    img.alt = item.title;
     inactiveBackdrop.classList.add('has-image');
   } else {
     img.removeAttribute('src');
+    img.alt = '';
   }
 
   if (immediate) {
@@ -86,6 +89,7 @@ function updateHeroCopy(item) {
   heroDesc.textContent = item.desc || 'No overview available yet.';
   heroEyebrow.textContent = item.eyebrow || 'Featured';
   heroMeta.innerHTML = [item.year, item.rating, item.runtime, item.genre].filter(Boolean).map(x => `<span>${x}</span>`).join('');
+  hero.dataset.activeItem = item.key || item.title;
 
   if (item.logo) {
     heroLogo.src = item.logo;
@@ -99,18 +103,18 @@ function updateHeroCopy(item) {
 
 function setHero(item, immediate = false) {
   if (item.surprise || !item.title) return;
-  if (activeHero === item.title && !immediate) return;
+  const itemKey = item.key || item.title;
+  if (activeHero === itemKey && !immediate) return;
 
   clearTimeout(heroTimer);
   const requestId = ++heroRequestId;
   const delay = immediate ? 0 : 200;
 
   heroTimer = setTimeout(async () => {
-    const targetTitle = item.title;
     const loadedUrl = await preloadImage(item.backdrop || item.image || '');
     if (requestId !== heroRequestId) return;
 
-    activeHero = targetTitle;
+    activeHero = itemKey;
     hero.classList.add('is-changing');
     document.documentElement.style.setProperty('--glow', `${item.colors[0]}66`);
     swapBackdrop(item, loadedUrl, immediate);
@@ -129,6 +133,7 @@ function setHero(item, immediate = false) {
 function makeCard(item) {
   const card = document.createElement('button');
   card.className = `card ${item.surprise ? 'surprise' : ''}`;
+  card.dataset.itemKey = item.key || item.title;
   card.style.setProperty('--card-bg', gradient(item));
   if (item.image) card.style.backgroundImage = `linear-gradient(0deg, rgba(0,0,0,.72), rgba(0,0,0,.12)), url('${item.image}')`;
   card.innerHTML = item.surprise
@@ -168,20 +173,45 @@ function remainingTime(item) {
   return remaining ? `${remaining} left` : '';
 }
 
-function imageTagUrl(api, item, type, width = 900) {
-  if (!item?.Id) return '';
-  return `${api.serverUrl}/Items/${item.Id}/Images/${type}?fillWidth=${width}&quality=92`;
+function imageUrl(serverUrl, ownerId, type, width = 900, cacheKey = '') {
+  if (!ownerId) return '';
+  const key = cacheKey ? `&ruflixKey=${encodeURIComponent(cacheKey)}` : '';
+  return `${serverUrl}/Items/${ownerId}/Images/${type}?fillWidth=${width}&quality=92${key}`;
+}
+
+function resolveArtwork(api, item) {
+  const itemKey = item.Id || item.Name || crypto.randomUUID?.() || String(Math.random());
+  const seriesOrParentId = item.SeriesId || item.ParentBackdropItemId || item.ParentLogoItemId || item.ParentId || item.Id;
+  const primaryOwner = item.ImageTags?.Primary ? item.Id : seriesOrParentId;
+  const backdropOwner = item.BackdropImageTags?.length ? item.Id : (item.ParentBackdropItemId || item.SeriesId || item.ParentId || item.Id);
+  const logoOwner = item.ImageTags?.Logo ? item.Id : (item.ParentLogoItemId || item.SeriesId || item.ParentId || '');
+
+  return {
+    key: itemKey,
+    image: imageUrl(api.serverUrl, primaryOwner, 'Primary', 520, `${itemKey}:primary:${primaryOwner}`),
+    backdrop: imageUrl(api.serverUrl, backdropOwner, 'Backdrop', 1600, `${itemKey}:backdrop:${backdropOwner}`),
+    logo: logoOwner ? imageUrl(api.serverUrl, logoOwner, 'Logo', 700, `${itemKey}:logo:${logoOwner}`) : ''
+  };
+}
+
+function episodeContext(item) {
+  if (!item.SeriesName && !item.SeasonName && !item.IndexNumber) return '';
+  const parts = [];
+  if (item.SeriesName) parts.push(item.SeriesName);
+  if (item.ParentIndexNumber && item.IndexNumber) parts.push(`S${item.ParentIndexNumber}:E${item.IndexNumber}`);
+  else if (item.IndexNumber) parts.push(`Episode ${item.IndexNumber}`);
+  return parts.join(' · ');
 }
 
 function jellyfinToMedia(api, item, label = '') {
   const color = hashColor(item.Id || item.Name || 'ruflix');
-  const image = imageTagUrl(api, item, 'Primary', 520);
-  const backdrop = item.BackdropImageTags?.length ? imageTagUrl(api, item, 'Backdrop', 1500) : image;
-  const logo = item.ImageTags?.Logo ? imageTagUrl(api, item, 'Logo', 700) : '';
+  const art = resolveArtwork(api, item);
   const progressLabel = remainingTime(item);
+  const context = episodeContext(item);
   return {
-    title: item.Name || 'Untitled',
-    sub: progressLabel || label || item.Type || '',
+    key: art.key,
+    title: item.SeriesName && item.Type === 'Episode' ? item.SeriesName : (item.Name || 'Untitled'),
+    sub: progressLabel || context || label || item.Type || '',
     year: item.ProductionYear || '',
     rating: item.OfficialRating || (item.CommunityRating ? `${Number(item.CommunityRating).toFixed(1)} rating` : ''),
     runtime: ticksToRuntime(item.RunTimeTicks),
@@ -189,10 +219,10 @@ function jellyfinToMedia(api, item, label = '') {
     progress: progressFromUserData(item),
     colors: [color, '#07090d'],
     desc: item.Overview || 'No overview available yet.',
-    image,
-    backdrop,
-    logo,
-    eyebrow: label || item.Type || 'From Jellyfin'
+    image: art.image,
+    backdrop: art.backdrop,
+    logo: art.logo,
+    eyebrow: context || label || item.Type || 'From Jellyfin'
   };
 }
 
