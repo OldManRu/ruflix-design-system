@@ -1,0 +1,42 @@
+/* RuFlix Home refinements layered after the main prototype CSS. */
+
+.hero-copy {
+  justify-content: center;
+  gap: 0;
+  max-width: min(680px, 56vw);
+}
+
+#heroDesc {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-height: 5.1em;
+  min-height: 0;
+  margin: 0;
+}
+
+.actions {
+  flex-shrink: 0;
+  margin-top: 22px;
+}
+
+.hero-logo {
+  flex-shrink: 0;
+}
+
+.metadata {
+  flex-shrink: 0;
+}
+
+@media (max-height: 760px) {
+  #heroDesc {
+    -webkit-line-clamp: 2;
+    max-height: 3.4em;
+  }
+
+  .hero-copy {
+    padding-top: 48px;
+    padding-bottom: 48px;
+  }
+}
