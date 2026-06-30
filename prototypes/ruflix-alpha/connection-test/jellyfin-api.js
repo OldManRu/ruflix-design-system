@@ -9,6 +9,28 @@ const DEVICE_NAME = 'RuFlix Browser Prototype';
 const DEVICE_ID = 'ruflix-alpha-browser';
 const VERSION = '0.1.0';
 
+const RUFIX_ITEM_FIELDS = [
+  'PrimaryImageAspectRatio',
+  'Overview',
+  'Genres',
+  'RunTimeTicks',
+  'ProductionYear',
+  'OfficialRating',
+  'CommunityRating',
+  'UserData',
+  'ImageTags',
+  'BackdropImageTags',
+  'ParentBackdropImageTags',
+  'ParentBackdropItemId',
+  'ParentLogoItemId',
+  'SeriesId',
+  'SeriesName',
+  'SeasonName',
+  'IndexNumber',
+  'ParentIndexNumber',
+  'MediaSources'
+].join(',');
+
 function normalizeServerUrl(url) {
   return url.trim().replace(/\/+$/, '');
 }
@@ -73,11 +95,11 @@ class JellyfinApi {
   }
 
   async latest(limit = 12) {
-    return this.request(`/Users/${this.userId}/Items/Latest?Limit=${limit}&Fields=PrimaryImageAspectRatio,Overview,Genres,RunTimeTicks,ProductionYear`);
+    return this.request(`/Users/${this.userId}/Items/Latest?Limit=${limit}&Fields=${encodeURIComponent(RUFIX_ITEM_FIELDS)}&EnableImageTypes=Primary,Backdrop,Logo`);
   }
 
   async resume(limit = 12) {
-    return this.request(`/Users/${this.userId}/Items/Resume?Limit=${limit}&Recursive=true&Fields=PrimaryImageAspectRatio,Overview,Genres,RunTimeTicks,ProductionYear,UserData`);
+    return this.request(`/Users/${this.userId}/Items/Resume?Limit=${limit}&Recursive=true&Fields=${encodeURIComponent(RUFIX_ITEM_FIELDS)}&EnableImageTypes=Primary,Backdrop,Logo`);
   }
 
   imageUrl(item, type = 'Primary', width = 360) {
