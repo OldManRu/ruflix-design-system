@@ -31,7 +31,7 @@ body {
     radial-gradient(circle at 78% 18%, var(--glow, rgba(229, 9, 20, 0.28)), transparent 36%),
     radial-gradient(circle at 20% 80%, rgba(255, 176, 32, 0.10), transparent 42%),
     linear-gradient(135deg, #050609 0%, #0b0e14 48%, #030406 100%);
-  transition: background 700ms var(--ease), filter 700ms var(--ease);
+  transition: background 1050ms var(--ease), filter 1050ms var(--ease);
   animation: breathe 16s var(--ease) infinite alternate;
 }
 
@@ -83,7 +83,7 @@ nav { display: flex; flex-direction: column; gap: 8px; }
   padding: 0 18px;
   font-size: 16px;
   cursor: pointer;
-  transition: transform 180ms var(--ease), background 180ms var(--ease), box-shadow 180ms var(--ease), color 180ms var(--ease);
+  transition: transform 220ms var(--ease), background 220ms var(--ease), box-shadow 220ms var(--ease), color 220ms var(--ease);
 }
 .nav-item:hover, .nav-item.active { color: #fff; background: rgba(255,255,255,0.08); transform: translateX(4px); box-shadow: inset 3px 0 0 var(--red); }
 .nav-divider { height: 1px; background: var(--line); margin: 12px 8px; }
@@ -122,7 +122,7 @@ nav { display: flex; flex-direction: column; gap: 8px; }
     linear-gradient(90deg, rgba(5,6,9,0.96), rgba(5,6,9,0.54), rgba(5,6,9,0.1)),
     var(--hero-bg, linear-gradient(135deg, #3a1f16, #101620 55%, #06070a));
   box-shadow: 0 30px 90px rgba(0,0,0,0.42), inset 0 0 0 1px var(--line);
-  transition: background 520ms var(--ease), box-shadow 520ms var(--ease), filter 520ms var(--ease);
+  transition: background 720ms var(--ease), box-shadow 720ms var(--ease), filter 720ms var(--ease);
 }
 body.movie-night .hero { box-shadow: 0 30px 110px rgba(255,176,32,0.12), inset 0 0 0 1px rgba(255,176,32,0.16); }
 .hero::after {
@@ -139,15 +139,15 @@ h1 { font-size: clamp(44px, 5.5vw, 82px); line-height: .95; margin: 12px 0 16px;
 .metadata span { background: rgba(255,255,255,0.08); border: 1px solid var(--line); padding: 6px 10px; border-radius: 999px; color: var(--soft); font-size: 13px; }
 p { color: var(--soft); font-size: 18px; line-height: 1.55; max-width: 580px; }
 .actions { display: flex; gap: 14px; margin-top: 28px; }
-.actions button, .shelf-title button { border: 0; border-radius: 14px; color: #fff; padding: 14px 24px; font-size: 16px; cursor: pointer; transition: transform 160ms var(--ease), box-shadow 160ms var(--ease), background 160ms var(--ease); }
+.actions button, .shelf-title button { border: 0; border-radius: 14px; color: #fff; padding: 14px 24px; font-size: 16px; cursor: pointer; transition: transform 180ms var(--ease), box-shadow 180ms var(--ease), background 180ms var(--ease); }
 .primary { background: linear-gradient(180deg, var(--red2), var(--red)); box-shadow: 0 16px 36px rgba(229,9,20,.32); }
 .secondary, .shelf-title button { background: rgba(255,255,255,0.08); border: 1px solid var(--line); }
 .actions button:hover, .shelf-title button:hover { transform: translateY(-2px); box-shadow: 0 18px 42px rgba(0,0,0,.35); }
 
 .shelf { margin-top: 32px; }
 .shelf.hidden { display: none; }
-.shelf.show { display: block; animation: shelfIn 520ms var(--ease) both; }
-@keyframes shelfIn { from { opacity: 0; transform: translateY(-18px); filter: blur(6px); } to { opacity: 1; transform: translateY(0); filter: blur(0); } }
+.shelf.show { display: block; animation: shelfIn 760ms var(--ease) both; }
+@keyframes shelfIn { from { opacity: 0; transform: translateY(-22px); filter: blur(7px); } to { opacity: 1; transform: translateY(0); filter: blur(0); } }
 .shelf-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; font-size: 22px; font-weight: 700; }
 h2 { font-size: 22px; margin: 0 0 14px; }
 .row { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(210px, 250px); gap: 18px; overflow-x: auto; padding: 4px 4px 26px; scroll-snap-type: x proximity; }
