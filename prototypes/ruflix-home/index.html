@@ -22,12 +22,13 @@
       <button class="nav-item"><span>Search</span></button>
       <button class="nav-item"><span>Settings</span></button>
     </nav>
-    <div class="profile"><div class="avatar"></div><span>Russel</span><span>v</span></div>
+    <div class="profile"><div class="avatar"></div><span id="profileName">RuFlix</span><span>v</span></div>
   </aside>
 
   <main class="app" id="app">
     <header class="topbar">
       <div class="search">Search your library</div>
+      <div class="data-status" id="dataStatus">Demo data</div>
       <div class="time">8:42 PM</div>
     </header>
 
@@ -64,6 +65,7 @@
     </section>
   </main>
 
+  <script src="../ruflix-alpha/connection-test/jellyfin-api.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
