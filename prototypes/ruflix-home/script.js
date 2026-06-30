@@ -8,7 +8,8 @@ const demoMedia = [
 ];
 
 const hero = document.getElementById('hero');
-const heroBackdrop = document.getElementById('heroBackdrop');
+const heroBackdropA = document.getElementById('heroBackdropA');
+const heroBackdropB = document.getElementById('heroBackdropB');
 const heroTitle = document.getElementById('heroTitle');
 const heroLogo = document.getElementById('heroLogo');
 const heroMeta = document.getElementById('heroMeta');
@@ -23,6 +24,8 @@ const libraryNav = document.getElementById('libraryNav');
 
 let heroTimer = null;
 let activeHero = null;
+let activeBackdrop = heroBackdropA;
+let inactiveBackdrop = heroBackdropB;
 
 function hashColor(input) {
   const palette = ['#6b2b12', '#16324f', '#3b1d5a', '#0d475d', '#7c4418', '#173b2f', '#4a1833', '#26324a'];
@@ -35,6 +38,29 @@ function gradient(item) {
   return `linear-gradient(135deg, ${item.colors[0]}, ${item.colors[1]})`;
 }
 
+function heroImage(item) {
+  if (item.backdrop) return `linear-gradient(135deg, rgba(5,6,9,.20), rgba(5,6,9,.08)), url('${item.backdrop}')`;
+  return gradient(item);
+}
+
+function swapBackdrop(item, immediate = false) {
+  inactiveBackdrop.style.backgroundImage = heroImage(item);
+
+  if (immediate) {
+    activeBackdrop.classList.remove('is-visible');
+    inactiveBackdrop.classList.add('is-visible');
+  } else {
+    requestAnimationFrame(() => {
+      inactiveBackdrop.classList.add('is-visible');
+      activeBackdrop.classList.remove('is-visible');
+    });
+  }
+
+  const previous = activeBackdrop;
+  activeBackdrop = inactiveBackdrop;
+  inactiveBackdrop = previous;
+}
+
 function setHero(item, immediate = false) {
   if (item.surprise || !item.title) return;
   if (activeHero === item.title && !immediate) return;
@@ -43,11 +69,10 @@ function setHero(item, immediate = false) {
   clearTimeout(heroTimer);
   heroTimer = setTimeout(() => {
     hero.classList.add('is-changing');
+    document.documentElement.style.setProperty('--glow', `${item.colors[0]}66`);
+    swapBackdrop(item, immediate);
+
     setTimeout(() => {
-      document.documentElement.style.setProperty('--glow', `${item.colors[0]}66`);
-      heroBackdrop.style.backgroundImage = item.backdrop
-        ? `linear-gradient(135deg, rgba(5,6,9,.22), rgba(5,6,9,.06)), url('${item.backdrop}')`
-        : gradient(item);
       heroTitle.textContent = item.title;
       heroDesc.textContent = item.desc || 'No overview available yet.';
       heroEyebrow.textContent = item.eyebrow || 'Featured';
@@ -61,10 +86,10 @@ function setHero(item, immediate = false) {
         heroLogo.classList.add('hidden');
         heroTitle.classList.remove('hidden');
       }
+    }, immediate ? 0 : 220);
 
-      setTimeout(() => hero.classList.remove('is-changing'), 180);
-    }, immediate ? 0 : 240);
-  }, immediate ? 0 : 220);
+    setTimeout(() => hero.classList.remove('is-changing'), immediate ? 120 : 760);
+  }, immediate ? 0 : 200);
 }
 
 function makeCard(item) {
