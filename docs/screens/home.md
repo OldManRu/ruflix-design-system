@@ -20,9 +20,9 @@ Home should make the library feel personal, current, and easy to enter.
 
 The left navigation should change based on actual available content. Do not show Photos, Music, Live TV, Collections, or other optional areas unless the related content or feature exists.
 
-## Hero Behavior
+Movie Night should appear in the left navigation as an optional action, not as a permanent content shelf.
 
-The hero should feel cinematic but calm.
+## Hero Behavior
 
 - Use large artwork or backdrop imagery.
 - Apply subtle ambient background color derived from the artwork.
@@ -39,9 +39,13 @@ The hero should feel cinematic but calm.
 6. Live TV if configured
 7. Optional content shelves if available
 
-## Movie Night Entry
+## Movie Night
 
-Movie Night may appear as a lightweight shelf or action. It should surface a few watchable options and a Surprise Me action without becoming a separate complex mode.
+Movie Night is user-invoked.
+
+Selecting **Movie Night** from the navigation temporarily transforms the Home experience by inserting a "Tonight's Picks" shelf near the top of the page. This shelf is generated for the current session and can include curated picks plus a "Surprise Me" option.
+
+When Movie Night is exited, the Home screen returns to its normal layout. Movie Night should never occupy a permanent shelf by default.
 
 ## Motion
 
