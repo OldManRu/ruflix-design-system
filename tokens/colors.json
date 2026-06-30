@@ -1,0 +1,38 @@
+{
+  "color": {
+    "background": {
+      "app": "#08090D",
+      "cinema": "#0B0E14",
+      "overlay": "rgba(0, 0, 0, 0.64)"
+    },
+    "surface": {
+      "base": "#12151D",
+      "raised": "#181C26",
+      "selected": "#202634",
+      "scrim": "rgba(8, 9, 13, 0.72)"
+    },
+    "text": {
+      "primary": "#FFFFFF",
+      "secondary": "#C9CED8",
+      "muted": "#8F96A3",
+      "disabled": "#5B626E"
+    },
+    "brand": {
+      "primary": "#E50914",
+      "primaryHover": "#F12A33",
+      "primaryActive": "#B80710"
+    },
+    "accent": {
+      "gold": "#FFB020",
+      "blue": "#4DA3FF",
+      "green": "#4ADE80",
+      "purple": "#A855F7"
+    },
+    "state": {
+      "focus": "#FFFFFF",
+      "danger": "#EF4444",
+      "success": "#22C55E",
+      "warning": "#F59E0B"
+    }
+  }
+}
