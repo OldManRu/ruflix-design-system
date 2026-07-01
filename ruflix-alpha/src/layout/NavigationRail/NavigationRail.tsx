@@ -1,3 +1,5 @@
+import "./NavigationRail.css";
+
 export function NavigationRail() {
   return (
     <aside className="sidebar">

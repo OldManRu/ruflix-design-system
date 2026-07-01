@@ -1,4 +1,5 @@
 import type { MediaItem } from "../../types/media";
+import "./Hero.css";
 
 type HeroProps = {
   item: MediaItem;

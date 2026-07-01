@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { JellyfinClient, JELLYFIN_STORAGE_KEYS } from "../../services/jellyfin/client";
+import "./SetupScreen.css";
 
 type SetupScreenProps = {
   onConnected: () => void;

@@ -1,0 +1,22 @@
+.media-shelf {
+  margin-top: 56px;
+}
+
+.media-shelf h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 22px;
+}
+
+.media-shelf__row {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 16px;
+  scrollbar-width: none;
+}
+
+.media-shelf__row::-webkit-scrollbar {
+  display: none;
+}

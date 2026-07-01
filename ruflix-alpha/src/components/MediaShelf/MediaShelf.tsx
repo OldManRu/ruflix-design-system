@@ -1,5 +1,6 @@
 import type { MediaItem } from "../../types/media";
 import { MediaCard } from "../MediaCard/MediaCard";
+import "./MediaShelf.css";
 
 type MediaShelfProps = {
   title: string;

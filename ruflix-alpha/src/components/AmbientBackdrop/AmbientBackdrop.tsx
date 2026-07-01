@@ -1,3 +1,5 @@
+import "./AmbientBackdrop.css";
+
 type AmbientBackdropProps = {
   imageUrl?: string;
 };
