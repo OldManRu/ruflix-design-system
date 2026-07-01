@@ -7,24 +7,33 @@ type HeroProps = {
 export function Hero({ item }: HeroProps) {
   return (
     <section className="hero">
-      <div className="eyebrow">Featured</div>
+      {item.backdropUrl ? (
+        <div
+          className="hero-backdrop"
+          style={{ backgroundImage: `url(${item.backdropUrl})` }}
+        />
+      ) : null}
 
-      <h1>{item.title}</h1>
+      <div className="hero-content">
+        <div className="eyebrow">Featured</div>
 
-      <div className="metadata">
-        {item.communityRating ? <span>★ {item.communityRating.toFixed(1)}</span> : null}
-        {item.rating ? <span>{item.rating}</span> : null}
-        {item.year ? <span>{item.year}</span> : null}
-        {item.runtime ? <span>{item.runtime}</span> : null}
-      </div>
+        <h1>{item.title}</h1>
 
-      <p>{item.overview}</p>
+        <div className="metadata">
+          {item.communityRating ? <span>★ {item.communityRating.toFixed(1)}</span> : null}
+          {item.rating ? <span>{item.rating}</span> : null}
+          {item.year ? <span>{item.year}</span> : null}
+          {item.runtime ? <span>{item.runtime}</span> : null}
+        </div>
 
-      <div className="actions">
-        <button className="primary">
-          {item.progressPercent ? "Resume" : "Play"}
-        </button>
-        <button className="secondary">More Info</button>
+        <p>{item.overview}</p>
+
+        <div className="actions">
+          <button className="primary">
+            {item.progressPercent ? "Resume" : "Play"}
+          </button>
+          <button className="secondary">More Info</button>
+        </div>
       </div>
     </section>
   );

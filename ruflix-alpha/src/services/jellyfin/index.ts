@@ -1,5 +1,6 @@
 import { JellyfinClient, JELLYFIN_STORAGE_KEYS } from "./client";
 import { mapJellyfinItem } from "./media";
+import { JellyfinImages } from "./images";
 
 function getStoredConnection() {
   const serverUrl = localStorage.getItem(JELLYFIN_STORAGE_KEYS.serverUrl);
@@ -14,7 +15,8 @@ function getStoredConnection() {
 }
 
 export function createJellyfinService() {
-  const connection = getStoredConnection();
+  
+    const connection = getStoredConnection();
 
   if (!connection) {
     return null;
@@ -26,6 +28,8 @@ export function createJellyfinService() {
     connection.userId,
   );
 
+  const images = new JellyfinImages(connection.serverUrl);
+
   return {
     async getContinueWatching(limit = 12) {
       const response = await client.resume(limit);
@@ -34,7 +38,7 @@ export function createJellyfinService() {
         ? response
         : (response as { Items?: unknown[] }).Items ?? [];
 
-      return items.map((item) => mapJellyfinItem(item as never));
+      return items.map((item) => mapJellyfinItem(item as never, images));
     },
 
     async getLatest(limit = 12) {
@@ -44,7 +48,7 @@ export function createJellyfinService() {
         ? response
         : (response as { Items?: unknown[] }).Items ?? [];
 
-      return items.map((item) => mapJellyfinItem(item as never));
+      return items.map((item) => mapJellyfinItem(item as never, images));
     },
   };
 }
