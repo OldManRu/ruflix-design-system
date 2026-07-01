@@ -9,8 +9,9 @@ export function Hero({ item }: HeroProps) {
     <section className="hero">
       {item.backdropUrl ? (
         <div
-          className="hero-backdrop"
+          className="hero-image"
           style={{ backgroundImage: `url(${item.backdropUrl})` }}
+          aria-hidden="true"
         />
       ) : null}
 

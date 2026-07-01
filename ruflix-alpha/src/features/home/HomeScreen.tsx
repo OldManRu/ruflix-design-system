@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { AmbientBackdrop } from "../../components/AmbientBackdrop/AmbientBackdrop";
 import { Hero } from "../../components/Hero/Hero";
 import { createJellyfinService } from "../../services/jellyfin";
 import type { MediaItem } from "../../types/media";
@@ -11,9 +12,9 @@ export function HomeScreen() {
   useEffect(() => {
     const jellyfin = createJellyfinService();
 
-   if (!jellyfin) {
-  return;
-}
+    if (!jellyfin) {
+      return;
+    }
 
     jellyfin
       .getContinueWatching(12)
@@ -31,6 +32,7 @@ export function HomeScreen() {
 
   return (
     <main className="content">
+      <AmbientBackdrop imageUrl={featured.backdropUrl} />
       <Hero item={featured} />
       <div className="connection-status">{status}</div>
     </main>

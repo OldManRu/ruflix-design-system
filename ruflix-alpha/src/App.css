@@ -80,22 +80,6 @@ nav button.active {
   align-items: center;
 }
 
-.hero {
-  width: min(920px, 100%);
-  min-height: 520px;
-  border-radius: 32px;
-  padding: 72px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  background:
-    linear-gradient(90deg, rgba(5, 6, 9, 0.96), rgba(5, 6, 9, 0.68), rgba(5, 6, 9, 0.22)),
-    linear-gradient(135deg, #3a1f16, #101620 55%, #06070a);
-  box-shadow:
-    0 38px 120px rgba(0, 0, 0, 0.56),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.10);
-}
-
 .eyebrow {
   color: #ff303a;
   text-transform: uppercase;
@@ -227,29 +211,81 @@ p {
 
 .hero {
   position: relative;
-  overflow: hidden;
+  overflow: visible;
+  width: min(1420px, calc(100vw - var(--sidebar-width) - 76px));
+  min-height: 620px;
+  padding: 96px 72px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
 }
 
-.hero-backdrop {
+.hero-image {
   position: absolute;
-  inset: 0;
+  inset: -110px -260px -160px -70px;
   background-size: cover;
   background-position: center;
-  opacity: 0.64;
+  opacity: 0.54;
   transform: scale(1.04);
+  z-index: 0;
+  mask-image:
+    linear-gradient(90deg, transparent 0%, black 18%, black 72%, transparent 100%),
+    linear-gradient(0deg, transparent 0%, black 20%, black 76%, transparent 100%);
+  mask-composite: intersect;
+  -webkit-mask-image:
+    linear-gradient(90deg, transparent 0%, black 18%, black 72%, transparent 100%),
+    linear-gradient(0deg, transparent 0%, black 20%, black 76%, transparent 100%);
+  -webkit-mask-composite: source-in;
 }
 
-.hero-backdrop::after {
+.hero-image::after {
   content: "";
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, rgba(5, 6, 9, 0.98), rgba(5, 6, 9, 0.78) 42%, rgba(5, 6, 9, 0.25)),
-    linear-gradient(0deg, rgba(5, 6, 9, 0.95), transparent 55%);
+    linear-gradient(90deg, rgba(5, 6, 9, 0.96), rgba(5, 6, 9, 0.68) 34%, rgba(5, 6, 9, 0.18) 68%, rgba(5, 6, 9, 0.78)),
+    linear-gradient(0deg, rgba(5, 6, 9, 0.94), transparent 48%, rgba(5, 6, 9, 0.42));
 }
 
 .hero-content {
   position: relative;
   z-index: 1;
-  max-width: 680px;
+  max-width: 660px;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 660px;
+}
+
+.ambient-backdrop {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.ambient-backdrop__image {
+  position: absolute;
+  inset: -80px;
+  background-size: cover;
+  background-position: center;
+  filter: blur(70px) saturate(1.28) brightness(0.42);
+  opacity: 0.34;
+  transform: scale(1.08);
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+}.hero
+
+.sidebar {
+  position: relative;
+  z-index: 2;
 }
