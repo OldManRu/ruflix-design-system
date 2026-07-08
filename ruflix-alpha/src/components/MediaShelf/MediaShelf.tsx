@@ -5,9 +5,14 @@ import "./MediaShelf.css";
 type MediaShelfProps = {
   title: string;
   items: MediaItem[];
+  onHighlight?: (item: MediaItem) => void;
 };
 
-export function MediaShelf({ title, items }: MediaShelfProps) {
+export function MediaShelf({
+  title,
+  items,
+  onHighlight,
+}: MediaShelfProps) {
   if (items.length === 0) return null;
 
   return (
@@ -16,7 +21,11 @@ export function MediaShelf({ title, items }: MediaShelfProps) {
 
       <div className="media-shelf__row">
         {items.map((item) => (
-          <MediaCard key={item.id} item={item} />
+          <MediaCard
+            key={item.id}
+            item={item}
+            onHover={() => onHighlight?.(item)}
+          />
         ))}
       </div>
     </section>

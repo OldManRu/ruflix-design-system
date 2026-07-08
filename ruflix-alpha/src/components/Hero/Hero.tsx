@@ -19,16 +19,18 @@ export function Hero({ item }: HeroProps) {
       <div className="hero-content">
         <div className="eyebrow">Featured</div>
 
-          {item.logoUrl ? (
-            <img className="hero-logo" src={item.logoUrl} alt={item.title} />
-          ) : (
-            <h1>{item.title}</h1>
-      )}
+        {item.logoUrl ? (
+          <img className="hero-logo" src={item.logoUrl} alt={item.title} />
+        ) : (
+          <h1>{item.title}</h1>
+        )}
 
         <div className="metadata">
           {item.communityRating ? (
-            <span className="metadata-rating">★ {item.communityRating.toFixed(1)}</span>
-        ) : null}
+            <span className="metadata-rating">
+              ★ {item.communityRating.toFixed(1)}
+            </span>
+          ) : null}
           {item.rating ? <span>{item.rating}</span> : null}
           {item.year ? <span>{item.year}</span> : null}
           {item.runtime ? <span>{item.runtime}</span> : null}
