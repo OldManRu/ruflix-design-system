@@ -1,4 +1,4 @@
-import type { MediaDetails } from "../../types/mediaDetails";
+import type { MediaDetails } from "../../types/MediaDetails";
 import { JellyfinImages } from "./images";
 
 type JellyfinPerson = {
@@ -15,6 +15,7 @@ type JellyfinItemDetails = {
   ProductionYear?: number;
   OfficialRating?: string;
   CommunityRating?: number;
+  progressPercent: 0,
   RunTimeTicks?: number;
   Genres?: string[];
   Studios?: { Name: string }[];

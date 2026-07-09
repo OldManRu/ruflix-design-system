@@ -6,7 +6,7 @@ import { MediaShelf } from "../../../components/MediaShelf/MediaShelf";
 import { createJellyfinService } from "../../../services/jellyfin";
 import type { HomeFeedData } from "../../../types/home";
 import type { MediaItem } from "../../../types/media";
-import type { MediaDetails } from "../../../types/mediaDetails";
+import type { MediaDetails } from "../../../types/MediaDetails";
 
 type HomeFeedProps = {
   feed: HomeFeedData;

@@ -19,6 +19,7 @@ export type MediaDetails = {
   rating?: string;
   runtime?: string;
   communityRating?: number;
+  progressPercent?: number;
 
   genres: string[];
   studios: string[];
