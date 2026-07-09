@@ -1,0 +1,26 @@
+.ruflix-app {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  background:
+    radial-gradient(circle at 78% 18%, rgba(229, 9, 20, 0.24), transparent 34%),
+    radial-gradient(circle at 20% 80%, rgba(255, 176, 32, 0.10), transparent 42%),
+    linear-gradient(135deg, #050609 0%, #0b0e14 48%, #030406 100%);
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  padding: 38px;
+  display: block;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+.connection-status {
+  position: fixed;
+  right: 24px;
+  bottom: 20px;
+  color: #8f96a3;
+  font-size: 13px;
+}

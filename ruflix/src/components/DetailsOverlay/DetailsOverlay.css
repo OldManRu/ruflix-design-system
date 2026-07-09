@@ -1,0 +1,166 @@
+.details-overlay {
+  position: fixed;
+  inset: 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: rgba(4, 6, 10, .58);
+  backdrop-filter: blur(18px);
+
+  z-index: 1000;
+
+  animation: overlay-fade 220ms ease;
+}
+
+.details-hero {
+  width: min(1200px, 92vw);
+  height: 760px;
+  max-height: 86vh;
+  
+  border-radius: 28px;
+  overflow: hidden;
+
+  background-size: cover;
+  background-position: center;
+
+  box-shadow:
+  0 32px 90px rgba(0,0,0,.55),
+  0 8px 24px rgba(0,0,0,.22);
+
+    animation: hero-pop 260ms cubic-bezier(.22,1,.36,1);
+}
+
+.details-hero-overlay {
+  height: 100%;
+
+  padding: 64px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+
+  overflow-y: auto;
+  scrollbar-width: none;
+
+  background:
+    linear-gradient(
+      to top,
+      rgba(5,6,9,.97),
+      rgba(5,6,9,.55) 45%,
+      rgba(5,6,9,.12)
+    );
+}
+
+.details-logo {
+  width: 420px;
+  max-width: 70%;
+  margin-bottom: 24px;
+
+  object-fit: contain;
+}
+
+
+.details-close:hover {
+  background: rgba(255,255,255,.14);
+  color: white;
+  transform: scale(1.08);
+}
+
+@keyframes overlay-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes hero-pop {
+  from {
+    opacity: 0;
+    transform: scale(.96) translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.details-genres {
+  margin-top: 18px;
+  color: rgba(255, 255, 255, 0.74);
+  font-size: 1rem;
+  letter-spacing: 0.01em;
+}
+
+.details-cast {
+  margin: 32px 0;
+}
+
+.details-cast h3 {
+  margin-bottom: 18px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(255,255,255,.9);
+}
+
+.cast-row {
+  display: flex;
+  gap: 18px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.cast-row::-webkit-scrollbar {
+  display: none;
+}
+
+.cast-member {
+  width: 92px;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.cast-member img,
+.cast-placeholder {
+  width: 72px;
+  height: 72px;
+
+  margin: 0 auto 10px;
+
+  border-radius: 50%;
+  object-fit: cover;
+
+  background: rgba(255,255,255,.08);
+}
+
+.cast-name {
+  display: block;
+
+  font-size: .82rem;
+  font-weight: 600;
+
+  color: white;
+}
+
+.cast-role {
+  display: block;
+
+  margin-top: 4px;
+
+  font-size: .72rem;
+
+  color: rgba(255,255,255,.55);
+}
+
+.details-hero-overlay::-webkit-scrollbar {
+  display: none;
+}
+
+.details-hero-overlay {
+  scrollbar-width: none;
+}

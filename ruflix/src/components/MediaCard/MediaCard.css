@@ -1,0 +1,43 @@
+.media-card {
+  position: relative;
+  width: 210px;
+  flex-shrink: 0;
+}
+
+.media-card__poster {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 18px;
+  display: block;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.media-card:hover .media-card__poster {
+  transform: scale(1.04);
+  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.45);
+}
+
+.media-card__placeholder {
+  aspect-ratio: 2 / 3;
+  border-radius: 18px;
+  background: rgba(255,255,255,.08);
+}
+
+.media-card__progress {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  height: 5px;
+  background: rgba(255,255,255,.15);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.media-card__progress-fill {
+  height: 100%;
+  background: #e50914;
+}
