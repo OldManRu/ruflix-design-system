@@ -6,12 +6,14 @@ type MediaShelfProps = {
   title: string;
   items: MediaItem[];
   onHighlight?: (item: MediaItem) => void;
+  onSelect?: (item: MediaItem) => void;
 };
 
 export function MediaShelf({
   title,
   items,
   onHighlight,
+  onSelect,
 }: MediaShelfProps) {
   if (items.length === 0) return null;
 
@@ -25,7 +27,8 @@ export function MediaShelf({
             key={item.id}
             item={item}
             onHover={() => onHighlight?.(item)}
-          />
+            onClick={() => onSelect?.(item)}
+/>
         ))}
       </div>
     </section>

@@ -1,5 +1,6 @@
 import { JellyfinClient, JELLYFIN_STORAGE_KEYS } from "./client";
 import { mapJellyfinItem } from "./media";
+import { mapJellyfinDetails } from "./details";
 import { JellyfinImages } from "./images";
 
 function getStoredConnection() {
@@ -49,6 +50,12 @@ export function createJellyfinService() {
         : (response as { Items?: unknown[] }).Items ?? [];
 
       return items.map((item) => mapJellyfinItem(item as never, images));
+    },
+
+    async getMediaDetails(itemId: string) {
+      const item = await client.item(itemId);
+
+      return mapJellyfinDetails(item as never, images);
     },
   };
 }

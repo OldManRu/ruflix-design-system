@@ -17,7 +17,7 @@ export function Hero({ item }: HeroProps) {
       ) : null}
 
       <div className="hero-content">
-        <div className="eyebrow">Featured</div>
+        
 
         {item.logoUrl ? (
           <img className="hero-logo" src={item.logoUrl} alt={item.title} />

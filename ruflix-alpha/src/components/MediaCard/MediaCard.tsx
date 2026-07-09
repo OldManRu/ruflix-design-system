@@ -4,14 +4,20 @@ import "./MediaCard.css";
 type MediaCardProps = {
   item: MediaItem;
   onHover?: () => void;
+  onClick?: () => void;
 };
 
-export function MediaCard({ item, onHover }: MediaCardProps) {
+export function MediaCard({
+  item,
+  onHover,
+  onClick,
+}: MediaCardProps) {
   return (
     <article
-      className="media-card"
-      onMouseEnter={onHover}
-    >
+  className="media-card"
+  onMouseEnter={onHover}
+  onClick={onClick}
+>
       {item.posterUrl ? (
         <img
           className="media-card__poster"

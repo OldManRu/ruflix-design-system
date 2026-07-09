@@ -139,6 +139,13 @@ export class JellyfinClient {
     return `${this.serverUrl}/Items/${itemId}/Images/${type}?fillWidth=${width}&quality=90${cacheTag}`;
   }
 
+  item(itemId: string) {
+  return this.request(
+    `/Users/${this.userId}/Items/${itemId}?Fields=${encodeURIComponent(
+      ITEM_FIELDS,
+    )},People,Studios,Genres`
+  );
+}
   playbackUrl(itemId: string) {
     return `${this.serverUrl}/Videos/${itemId}/stream?Static=true&mediaSourceId=${itemId}&api_key=${encodeURIComponent(
       this.token || "",
