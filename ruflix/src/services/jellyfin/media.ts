@@ -21,7 +21,12 @@ type JellyfinItem = {
 
   ParentBackdropItemId?: string;
   ParentLogoItemId?: string;
+
   SeriesId?: string;
+  SeriesName?: string;
+
+  ParentIndexNumber?: number;
+  IndexNumber?: number;
 };
 
 function formatRuntime(ticks?: number): string | undefined {
@@ -74,5 +79,11 @@ export function mapJellyfinItem(
     backdropUrl: images.backdrop(backdropOwnerId),
     posterUrl: images.poster(item.Id, item.ImageTags?.Primary),
     logoUrl: logoOwnerId ? images.logo(logoOwnerId, item.ImageTags?.Logo) : undefined,
+    
+    seriesId: item.SeriesId,
+    seriesTitle: item.SeriesName,
+
+    seasonNumber: item.ParentIndexNumber,
+    episodeNumber: item.IndexNumber,
   };
 }

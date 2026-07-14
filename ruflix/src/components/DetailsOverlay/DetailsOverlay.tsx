@@ -6,13 +6,18 @@ import "./DetailsOverlay.css";
 type DetailsOverlayProps = {
   item: MediaItem | MediaDetails;
   onClose: () => void;
+  onPlay: (item: MediaItem | MediaDetails) => void;
 };
 
 function hasGenres(item: MediaItem | MediaDetails): item is MediaDetails {
   return "genres" in item && item.genres.length > 0;
 }
 
-export function DetailsOverlay({ item, onClose }: DetailsOverlayProps) {
+export function DetailsOverlay({
+  item,
+  onClose,
+  onPlay,
+}: DetailsOverlayProps) {
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
@@ -30,6 +35,11 @@ export function DetailsOverlay({ item, onClose }: DetailsOverlayProps) {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [onClose]);
+
+  function handlePlay() {
+    onPlay(item);
+    onClose();
+  }
 
   return (
     <div
@@ -72,68 +82,43 @@ export function DetailsOverlay({ item, onClose }: DetailsOverlayProps) {
           <p>{item.overview}</p>
 
           <div className="actions">
-  {item.progressPercent ? (
-    <>
-      <button className="primary">
-        Resume
-      </button>
+            {item.progressPercent ? (
+              <>
+                <button
+                  className="primary"
+                  onClick={handlePlay}
+                >
+                  Resume
+                </button>
 
-      <button className="secondary">
-        Play From Beginning
-      </button>
-    </>
-  ) : (
-    <button className="primary">
-      Play
-    </button>
-  )}
+                <button
+                  className="secondary"
+                  onClick={handlePlay}
+                >
+                  Play From Beginning
+                </button>
+              </>
+            ) : (
+              <button
+                className="primary"
+                onClick={handlePlay}
+              >
+                Play
+              </button>
+            )}
 
-  <button className="secondary">
-    Trailer
-  </button>
+            <button className="secondary">
+              Trailer
+            </button>
 
-  <button className="secondary">
-    Cast
-  </button>
-</div>
+            <button className="secondary">
+              Cast
+            </button>
+          </div>
 
           {hasGenres(item) ? (
             <div className="details-genres">
               {item.genres.join(" • ")}
-            </div>
-          ) : null}
-
-          {hasGenres(item) && item.people.length > 0 ? (
-            <div className="details-cast">
-              <h3>Cast</h3>
-
-              <div className="cast-row">
-                {item.people.slice(0, 10).map((person) => (
-                  <div
-                    key={person.id}
-                    className="cast-member"
-                  >
-                    {person.imageUrl ? (
-                      <img
-                        src={person.imageUrl}
-                        alt={person.name}
-                      />
-                    ) : (
-                      <div className="cast-placeholder" />
-                    )}
-
-                    <span className="cast-name">
-                      {person.name}
-                    </span>
-
-                    {person.role ? (
-                      <span className="cast-role">
-                        {person.role}
-                      </span>
-                    ) : null}
-                  </div>
-                ))}
-              </div>
             </div>
           ) : null}
 

@@ -4,6 +4,7 @@ import { DetailsOverlay } from "../../../components/DetailsOverlay/DetailsOverla
 import { Hero } from "../../../components/Hero/Hero";
 import { MediaShelf } from "../../../components/MediaShelf/MediaShelf";
 import { createJellyfinService } from "../../../services/jellyfin";
+import { VideoPlayer } from "../../player/VideoPlayer";
 import type { HomeFeedData } from "../../../types/home";
 import type { MediaItem } from "../../../types/media";
 import type { MediaDetails } from "../../../types/MediaDetails";
@@ -17,6 +18,9 @@ export function HomeFeed({ feed }: HomeFeedProps) {
   const [selectedMedia, setSelectedMedia] = useState<
     MediaItem | MediaDetails | null
   >(null);
+  const [playingItem, setPlayingItem] = useState<
+  MediaItem | MediaDetails | null
+>(null);
   const [detailsLoading, setDetailsLoading] = useState(false);
   const hoverTimeout = useRef<number | null>(null);
 
@@ -66,22 +70,35 @@ export function HomeFeed({ feed }: HomeFeedProps) {
 
       <Hero item={selected} />
 
-      {feed.shelves.map((shelf) => (
-        <MediaShelf
-          key={shelf.id}
-          title={shelf.title}
-          items={shelf.items}
-          onHighlight={handleHighlight}
-          onSelect={handleSelect}
-        />
-      ))}
+      <div className="home-shelves">
+  {feed.shelves.map((shelf) => (
+    <MediaShelf
+      key={shelf.id}
+      title={shelf.title}
+      items={shelf.items}
+      onHighlight={handleHighlight}
+      onSelect={handleSelect}
+    />
+  ))}
+</div>
 
       {selectedMedia && (
         <DetailsOverlay
           item={selectedMedia}
           onClose={() => setSelectedMedia(null)}
-        />
-      )}
+          onPlay={(item) => setPlayingItem(item)}
+  />
+)}
+
+{playingItem && (
+  <VideoPlayer
+    src={
+      createJellyfinService()?.getPlaybackUrl(playingItem.id) ?? ""
+    }
+    title={playingItem.title}
+    onClose={() => setPlayingItem(null)}
+  />
+)}
 
       <div className="connection-status">
         {detailsLoading ? "Loading details..." : feed.status}

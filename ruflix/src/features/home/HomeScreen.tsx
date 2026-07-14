@@ -3,6 +3,7 @@ import { createJellyfinService } from "../../services/jellyfin";
 import type { HomeFeedData } from "../../types/home";
 import { HomeFeed } from "./HomeFeed/HomeFeed";
 import { featuredMedia } from "./mockMedia";
+import { dedupeRecentlyAdded } from "../../utils/media/dedupeRecentlyAdded";
 
 const initialFeed: HomeFeedData = {
   featured: featuredMedia,
@@ -25,8 +26,13 @@ export function HomeScreen() {
       jellyfin.getLatest(12),
     ])
       .then(([continueWatching, recentlyAdded]) => {
+        const dedupedRecentlyAdded = dedupeRecentlyAdded(recentlyAdded);
+
         setFeed({
-          featured: continueWatching[0] ?? recentlyAdded[0] ?? featuredMedia,
+          featured:
+            continueWatching[0] ??
+            dedupedRecentlyAdded[0] ??
+            featuredMedia,
           shelves: [
             {
               id: "continue-watching",
@@ -36,7 +42,7 @@ export function HomeScreen() {
             {
               id: "recently-added",
               title: "Recently Added",
-              items: recentlyAdded,
+              items: dedupedRecentlyAdded,
             },
           ],
           status: "Connected to Jellyfin",
@@ -44,6 +50,7 @@ export function HomeScreen() {
       })
       .catch((error) => {
         console.error(error);
+
         setFeed((currentFeed) => ({
           ...currentFeed,
           status: "Jellyfin connection failed",

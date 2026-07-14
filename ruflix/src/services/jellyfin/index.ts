@@ -52,10 +52,14 @@ export function createJellyfinService() {
       return items.map((item) => mapJellyfinItem(item as never, images));
     },
 
-    async getMediaDetails(itemId: string) {
+        async getMediaDetails(itemId: string) {
       const item = await client.item(itemId);
 
       return mapJellyfinDetails(item as never, images);
+    },
+
+    getPlaybackUrl(itemId: string) {
+      return `${connection.serverUrl}/Videos/${itemId}/stream?static=true&api_key=${connection.token}`;
     },
   };
 }
